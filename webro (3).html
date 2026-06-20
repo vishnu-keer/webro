@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WEBRO | Web Design, AI & Digital Solutions Agency</title>
+<meta name="description" content="WEBRO is a modern web & AI agency offering website development, UI/UX design, e-commerce, mobile apps & SEO. India + International." />
+<meta property="og:title" content="WEBRO | Web Design, AI & Digital Solutions Agency" />
+<meta property="og:description" content="Build Smart. Grow Faster. Powered by AI." />
+<meta property="og:type" content="website" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  /* ============================================================
+     WEBRO — Lime & Beige design tokens
+     ============================================================ */
+  :root{
+    --beige:#F1EBDD;          /* warm page background */
+    --beige-2:#FBF7EE;        /* raised surface */
+    --cream:#FFFDF8;
+    --ink:#1C1B14;            /* near-black warm ink */
+    --ink-soft:#5b5848;       /* muted text */
+    --lime:#C2D98A;           /* soft sage-lime accent / glow */
+    --lime-2:#8AAB3C;         /* muted primary lime */
+    --lime-deep:#4F7016;      /* deep olive-lime for contrast */
+    --line:rgba(77,124,15,.16);
+    --glass:rgba(255,255,255,.55);
+    --glass-brd:rgba(77,124,15,.22);
+    --glow:0 0 0 1px rgba(132,204,22,.4), 0 22px 55px -22px rgba(101,163,13,.5);
+    --shadow:0 14px 40px -18px rgba(40,50,15,.35);
+    --maxw:1180px; --r:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--beige);color:var(--ink);font-family:"DM Sans",system-ui,sans-serif;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4,.display{font-family:"Space Grotesk",sans-serif;line-height:1.08;letter-spacing:-.02em}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  section{position:relative}
+  ::selection{background:var(--lime);color:var(--ink)}
+
+  .bg-fx{position:fixed;inset:0;z-index:0;pointer-events:none}
+  .bg-fx .grid{position:absolute;inset:0;
+    background-image:linear-gradient(rgba(77,124,15,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(77,124,15,.07) 1px,transparent 1px);
+    background-size:54px 54px;
+    mask-image:radial-gradient(ellipse 85% 65% at 50% 0%,#000 30%,transparent 80%);
+    -webkit-mask-image:radial-gradient(ellipse 85% 65% at 50% 0%,#000 30%,transparent 80%);}
+  .bg-fx .blob{position:absolute;border-radius:50%;filter:blur(100px);opacity:.5}
+  .blob.a{width:520px;height:520px;background:#d4e0a8;top:-180px;left:-120px;opacity:.35}
+  .blob.b{width:460px;height:460px;background:#e7dcc0;top:34%;right:-160px;opacity:.5}
+  .blob.c{width:420px;height:420px;background:#c4d291;bottom:-120px;left:30%;opacity:.25}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px;position:relative;z-index:2}
+
+  /* ===== Animated logo (W + arrow + globe + chart) ===== */
+  .logo-mark{display:block}
+  .lp{fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .lp-w{stroke:url(#limeGrad);stroke-width:7;stroke-dasharray:260;stroke-dashoffset:260;animation:draw 1.1s cubic-bezier(.5,0,.2,1) forwards}
+  .lp-arrow{stroke:url(#limeGrad);stroke-width:7;stroke-dasharray:40;stroke-dashoffset:40;animation:draw .4s ease 1s forwards}
+  .lp-chart{stroke:var(--lime-2);stroke-width:2.6;opacity:.85;stroke-dasharray:110;stroke-dashoffset:110;animation:draw .9s ease .5s forwards}
+  .lnode{fill:var(--lime);transform:scale(0);transform-box:fill-box;transform-origin:center;animation:pop .4s cubic-bezier(.3,1.4,.5,1) forwards}
+  .lnode.n1{animation-delay:.7s}.lnode.n2{animation-delay:.85s}.lnode.n3{animation-delay:1s}.lnode.n4{animation-delay:1.15s}
+  .globe circle,.globe ellipse,.globe line{stroke:var(--lime-deep)}
+  .globe{opacity:0;animation:fadein .5s ease .6s forwards}
+  .merid{transform-box:fill-box;transform-origin:center;animation:spin 3.4s ease-in-out infinite}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @keyframes pop{to{transform:scale(1)}}
+  @keyframes fadein{to{opacity:1}}
+  @keyframes spin{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.18)}}
+
+  /* ===== Intro / loading page (first pic) ===== */
+  #loader{position:fixed;inset:0;z-index:9999;background:var(--beige);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;transition:opacity .7s ease,visibility .7s ease}
+  #loader.hide{opacity:0;visibility:hidden}
+  #loader .logo-mark{width:120px;height:120px;animation:floaty 4.5s ease-in-out infinite}
+  @keyframes floaty{50%{transform:translateY(-5px)}}
+  .load-word{font-family:"Space Grotesk";font-weight:700;font-size:42px;letter-spacing:.14em;color:var(--ink);margin-top:8px;opacity:0;animation:rise .6s ease 1.1s forwards}
+  .load-word b{color:var(--lime-deep)}
+  .load-tag{font-family:"Space Grotesk";font-weight:500;letter-spacing:.32em;font-size:12px;color:var(--ink-soft);text-transform:uppercase;opacity:0;animation:rise .6s ease 1.3s forwards}
+  .load-bar{width:150px;height:3px;border-radius:3px;background:rgba(77,124,15,.16);overflow:hidden;margin-top:22px;opacity:0;animation:fadein .4s ease 1.4s forwards}
+  .load-bar span{display:block;height:100%;width:40%;border-radius:3px;background:linear-gradient(90deg,var(--lime-2),var(--lime));animation:slide 1s ease-in-out infinite}
+  @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  @keyframes slide{0%{transform:translateX(-120%)}100%{transform:translateX(380%)}}
+
+  /* Top call bar */
+  .topbar{background:linear-gradient(90deg,var(--lime-deep),var(--lime-2));color:#fff;font-size:13.5px;text-align:center;padding:8px 14px;position:relative;z-index:201;font-family:"Space Grotesk";font-weight:500}
+  .topbar a{font-weight:700;text-decoration:underline;text-underline-offset:2px}
+
+  /* Navbar */
+  header{position:fixed;top:0;left:0;right:0;z-index:200;transition:background .35s,border-color .35s,backdrop-filter .35s,box-shadow .35s}
+  header.scrolled{background:rgba(251,247,238,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);box-shadow:0 6px 24px -18px rgba(40,50,15,.5)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:70px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:"Space Grotesk";font-weight:700;font-size:22px;letter-spacing:.02em}
+  .brand .logo-mark{width:34px;height:34px}
+  .brand b{color:var(--lime-deep)}
+  .menu{display:flex;align-items:center;gap:28px}
+  .menu a{color:var(--ink-soft);font-size:15px;font-weight:500;transition:color .2s;position:relative}
+  .menu a:hover{color:var(--ink)}
+  .menu a::after{content:"";position:absolute;left:0;bottom:-6px;height:2px;width:0;background:var(--lime-2);transition:width .25s}
+  .menu a:hover::after{width:100%}
+  .nav-actions{display:flex;align-items:center;gap:12px}
+  .call-btn{display:inline-flex;align-items:center;gap:8px;color:var(--lime-deep);font-family:"Space Grotesk";font-weight:600;font-size:14.5px}
+  .call-btn svg{width:16px;height:16px}
+  .burger{display:none;background:none;border:0;color:var(--ink);cursor:pointer;padding:8px}
+  .burger svg{width:26px;height:26px}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:13px 22px;border-radius:12px;font-family:"Space Grotesk";font-weight:600;font-size:15px;cursor:pointer;border:1px solid transparent;transition:transform .18s,box-shadow .25s,background .25s;white-space:nowrap}
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:linear-gradient(135deg,#6aa717,#4D7C0F);color:#fff;box-shadow:0 10px 26px -14px rgba(77,124,15,.6)}
+  .btn-primary:hover{box-shadow:0 16px 38px -14px rgba(77,124,15,.75);transform:translateY(-2px)}
+  .btn-ghost{background:var(--cream);border:1px solid var(--glass-brd);color:var(--ink)}
+  .btn-ghost:hover{border-color:var(--lime-2);box-shadow:0 0 0 1px var(--lime-2)}
+  .btn-sm{padding:10px 16px;font-size:14px;border-radius:10px}
+
+  /* Hero */
+  .hero{padding:150px 0 80px;text-align:center;overflow:hidden;min-height:92vh;display:flex;align-items:center}
+  #three{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+  .hero .wrap{z-index:3}
+  .hero-veil{position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse 62% 58% at 50% 46%, var(--beige) 20%, rgba(241,235,221,.78) 44%, rgba(241,235,221,.3) 72%, transparent 90%)}
+  .pill{display:inline-flex;align-items:center;gap:9px;padding:7px 15px;border-radius:999px;background:var(--cream);border:1px solid var(--glass-brd);font-size:13px;color:var(--lime-deep);margin-bottom:26px;font-weight:500;box-shadow:var(--shadow)}
+  .pill i{width:7px;height:7px;border-radius:50%;background:var(--lime-2);box-shadow:0 0 10px var(--lime-2)}
+  .hero h1{font-size:clamp(40px,6.6vw,78px);font-weight:700;max-width:15ch;margin:0 auto}
+  .hero h1 em{font-style:normal;color:var(--lime-deep)}
+  .hero p.sub{max-width:600px;margin:24px auto 0;color:var(--ink-soft);font-size:clamp(16px,2.2vw,19px)}
+  .hero-cta{display:flex;gap:14px;justify-content:center;margin-top:38px;flex-wrap:wrap}
+  .hero-strip{display:flex;gap:34px;justify-content:center;flex-wrap:wrap;margin-top:54px;color:var(--ink-soft);font-size:14px}
+  .hero-strip b{color:var(--ink);font-family:"Space Grotesk"}
+
+  .eyebrow{display:inline-block;font-family:"Space Grotesk";font-weight:600;letter-spacing:.18em;text-transform:uppercase;font-size:12.5px;color:var(--lime-deep);margin-bottom:14px}
+  .sec-head{text-align:center;max-width:680px;margin:0 auto 56px}
+  .sec-head h2{font-size:clamp(30px,4.6vw,46px);font-weight:700}
+  .sec-head p{color:var(--ink-soft);margin-top:16px;font-size:17px}
+  .block{padding:96px 0}
+
+  .glass{background:var(--glass);border:1px solid var(--glass-brd);border-radius:var(--r);backdrop-filter:blur(10px);box-shadow:var(--shadow);transition:transform .25s,border-color .25s,box-shadow .3s}
+
+  /* Marquee */
+  .marquee{overflow:hidden;position:relative;padding:14px 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+  .marquee-track{display:flex;gap:14px;width:max-content;animation:scrollx 48s linear infinite}
+  .marquee:hover .marquee-track{animation-play-state:paused}
+  @keyframes scrollx{to{transform:translateX(-50%)}}
+  .flag{display:inline-flex;align-items:center;gap:9px;padding:9px 16px;border-radius:999px;background:var(--cream);border:1px solid var(--glass-brd);font-size:14px;font-family:"Space Grotesk";font-weight:500;white-space:nowrap}
+  .flag img{width:22px;height:auto;border-radius:3px}
+  .tech-chip{display:inline-flex;align-items:center;gap:10px;padding:11px 18px;border-radius:14px;background:var(--cream);border:1px solid var(--glass-brd);font-family:"Space Grotesk";font-weight:500;font-size:14.5px;white-space:nowrap}
+  .tech-chip img{width:26px;height:26px}
+
+  .tilt{transform-style:preserve-3d;transition:transform .15s ease,box-shadow .3s,border-color .25s;will-change:transform}
+  .tilt:hover{border-color:var(--lime-2);box-shadow:var(--glow)}
+  .tilt > *{transform:translateZ(26px)}
+
+  /* Services */
+  .svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .svc{padding:30px 26px;position:relative;overflow:hidden;background:var(--cream)}
+  .svc .ico{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;margin-bottom:20px;background:linear-gradient(135deg,rgba(132,204,22,.22),rgba(163,230,53,.14));border:1px solid var(--glass-brd);color:var(--lime-deep)}
+  .svc .ico svg{width:26px;height:26px}
+  .svc h3{font-size:21px;font-weight:600;margin-bottom:10px}
+  .svc p{color:var(--ink-soft);font-size:15px}
+  .svc .feat{list-style:none;margin-top:18px;display:flex;flex-direction:column;gap:9px}
+  .svc .feat li{display:flex;gap:10px;align-items:flex-start;color:#3f3d33;font-size:14px}
+  .svc .feat svg{width:16px;height:16px;color:var(--lime-deep);flex:0 0 auto;margin-top:4px}
+  .svc-link{display:inline-flex;align-items:center;gap:7px;margin-top:22px;color:var(--lime-deep);font-weight:600;font-size:14.5px;font-family:"Space Grotesk"}
+  .svc-link svg{width:16px;height:16px;transition:transform .2s}
+  .svc:hover .svc-link svg{transform:translateX(4px)}
+
+  /* Stats */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+  .stat{padding:30px 22px;text-align:center;background:var(--cream)}
+  .stat .num{font-family:"Space Grotesk";font-weight:700;font-size:clamp(34px,5vw,50px);color:var(--lime-deep)}
+  .stat .lbl{color:var(--ink-soft);font-size:14px;margin-top:6px}
+
+  /* Why */
+  .why{display:grid;grid-template-columns:1.05fr 1fr;gap:50px;align-items:center}
+  .why-list{display:flex;flex-direction:column;gap:18px;margin-top:30px}
+  .why-item{display:flex;gap:16px;align-items:flex-start}
+  .why-item .wi{width:42px;height:42px;border-radius:11px;flex:0 0 auto;display:grid;place-items:center;background:linear-gradient(135deg,rgba(132,204,22,.25),rgba(163,230,53,.12));border:1px solid var(--glass-brd);color:var(--lime-deep)}
+  .why-item .wi svg{width:20px;height:20px}
+  .why-item h4{font-size:17px;font-weight:600;margin-bottom:3px}
+  .why-item p{color:var(--ink-soft);font-size:14.5px}
+  .why-visual{padding:34px;border-radius:24px;position:relative;overflow:hidden;background:var(--cream)}
+  .vchip{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:13px;background:var(--beige-2);border:1px solid var(--line);margin-bottom:13px}
+  .vchip:last-child{margin-bottom:0}
+  .vchip .d{width:10px;height:10px;border-radius:50%;background:var(--lime-2);box-shadow:0 0 12px var(--lime-2)}
+  .vchip b{font-family:"Space Grotesk";font-size:15px}
+  .vchip span{color:var(--ink-soft);font-size:13.5px;margin-left:auto}
+
+  /* Portfolio */
+  .filters{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:38px}
+  .filters button{padding:9px 18px;border-radius:999px;background:var(--cream);border:1px solid var(--glass-brd);color:var(--ink-soft);font-family:"Space Grotesk";font-weight:500;font-size:14px;cursor:pointer;transition:.2s}
+  .filters button:hover{color:var(--ink)}
+  .filters button.active{background:linear-gradient(135deg,var(--lime-2),var(--lime));color:var(--ink);border-color:transparent}
+  .portfolio{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .proj{border-radius:var(--r);overflow:hidden;border:1px solid var(--glass-brd);background:var(--cream);box-shadow:var(--shadow)}
+  .proj .thumb{height:170px;position:relative;display:grid;place-items:center;font-family:"Space Grotesk";font-weight:700;font-size:24px;color:#fbfdf6;letter-spacing:.04em;text-shadow:0 1px 8px rgba(40,50,15,.35)}
+  .proj .thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(40,50,15,.14))}
+  .proj .body{padding:20px}
+  .proj .tag{font-size:12px;color:var(--lime-deep);text-transform:uppercase;letter-spacing:.12em;font-family:"Space Grotesk";font-weight:600}
+  .proj h3{font-size:18px;margin:8px 0 6px}
+  .proj .tech{color:var(--ink-soft);font-size:13.5px}
+  .proj .live{display:inline-flex;align-items:center;gap:7px;margin-top:14px;color:var(--lime-deep);font-weight:600;font-size:14px;font-family:"Space Grotesk"}
+  .proj .live svg{width:15px;height:15px}
+
+  /* Pricing */
+  .pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
+  .plan{padding:34px 28px;display:flex;flex-direction:column;background:var(--cream)}
+  .plan.feat-plan{border-color:var(--lime-2);box-shadow:var(--glow);position:relative}
+  .plan .ribbon{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--lime-2),var(--lime));color:var(--ink);font-size:12px;font-weight:600;font-family:"Space Grotesk";padding:5px 14px;border-radius:999px;letter-spacing:.04em}
+  .plan h3{font-size:20px;font-weight:600}
+  .plan .price{font-family:"Space Grotesk";font-weight:700;font-size:42px;margin:14px 0 4px}
+  .plan .price small{font-size:15px;color:var(--ink-soft);font-weight:500}
+  .plan .desc{color:var(--ink-soft);font-size:14px;min-height:42px}
+  .plan ul{list-style:none;margin:22px 0 26px;display:flex;flex-direction:column;gap:12px}
+  .plan li{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;color:#3f3d33}
+  .plan li svg{width:17px;height:17px;color:var(--lime-deep);flex:0 0 auto;margin-top:3px}
+  .plan .btn{margin-top:auto;width:100%}
+
+  /* Testimonials */
+  .tslider{max-width:760px;margin:0 auto;position:relative;background:var(--cream)}
+  .tcard{padding:40px 38px;text-align:center;display:none}
+  .tcard.on{display:block;animation:fade .5s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .tcard .stars{color:var(--lime-2);letter-spacing:3px;margin-bottom:18px}
+  .tcard q{font-family:"Space Grotesk";font-size:clamp(18px,2.6vw,23px);font-weight:500;line-height:1.5}
+  .tcard .who{margin-top:24px;display:flex;align-items:center;justify-content:center;gap:13px}
+  .tcard .av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-family:"Space Grotesk";font-weight:700;background:linear-gradient(135deg,var(--lime-2),var(--lime));color:var(--ink)}
+  .tcard .who b{font-family:"Space Grotesk";font-size:15px;display:block}
+  .tcard .who span{color:var(--ink-soft);font-size:13.5px}
+  .tdots{display:flex;gap:9px;justify-content:center;margin-top:28px;padding-bottom:28px}
+  .tdots button{width:9px;height:9px;border-radius:50%;border:0;background:rgba(77,124,15,.22);cursor:pointer;transition:.2s;padding:0}
+  .tdots button.on{background:var(--lime-2);width:26px;border-radius:6px}
+
+  /* FAQ */
+  .faq{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+  .qa{border:1px solid var(--glass-brd);border-radius:14px;background:var(--cream);overflow:hidden}
+  .qa button{width:100%;text-align:left;background:none;border:0;color:var(--ink);cursor:pointer;padding:20px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;font-family:"Space Grotesk";font-weight:500;font-size:16.5px}
+  .qa .plus{width:22px;height:22px;flex:0 0 auto;position:relative;transition:transform .3s}
+  .qa .plus::before,.qa .plus::after{content:"";position:absolute;background:var(--lime-deep);border-radius:2px}
+  .qa .plus::before{top:50%;left:0;right:0;height:2px;transform:translateY(-50%)}
+  .qa .plus::after{left:50%;top:0;bottom:0;width:2px;transform:translateX(-50%);transition:opacity .3s}
+  .qa.open .plus{transform:rotate(180deg)}
+  .qa.open .plus::after{opacity:0}
+  .qa .ans{max-height:0;overflow:hidden;transition:max-height .35s ease}
+  .qa .ans p{padding:0 22px 22px;color:var(--ink-soft);font-size:15px}
+
+  /* About */
+  .about{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:start}
+  .about .lead{font-size:18px;color:#3f3d33;margin-bottom:18px}
+  .about p{color:var(--ink-soft);margin-bottom:14px}
+  .vv{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px}
+  .vv .card{padding:24px;background:var(--cream)}
+  .vv .card h4{font-size:17px;margin-bottom:8px;color:var(--lime-deep)}
+  .vv .card p{font-size:14px;color:var(--ink-soft);margin:0}
+  .founder{padding:26px;display:flex;gap:18px;align-items:center;margin-top:20px;background:var(--cream)}
+  .founder .av{width:62px;height:62px;border-radius:16px;display:grid;place-items:center;font-family:"Space Grotesk";font-weight:700;font-size:24px;background:linear-gradient(135deg,var(--lime-2),var(--lime));color:var(--ink);flex:0 0 auto}
+  .founder b{font-family:"Space Grotesk";font-size:18px}
+  .founder span{color:var(--ink-soft);font-size:14px}
+
+  /* CTA */
+  .cta-banner{padding:60px 50px;border-radius:28px;text-align:center;position:relative;overflow:hidden;background:linear-gradient(135deg,#5f8f1a,#3f6212);border:1px solid #365314}
+  .cta-banner h2{font-size:clamp(28px,4.4vw,44px);font-weight:700;max-width:18ch;margin:0 auto;color:#fff}
+  .cta-banner p{color:#e6efd0;margin:16px auto 30px;max-width:46ch;font-size:17px}
+  .cta-banner .btn-ghost{background:rgba(255,255,255,.92);border-color:transparent}
+  .cta-orbit{position:absolute;width:340px;height:340px;border-radius:50%;border:1px solid rgba(255,255,255,.22);top:-130px;right:-90px;animation:rot 34s linear infinite}
+  .cta-orbit::before{content:"";position:absolute;width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.8);top:-6px;left:50%;transform:translateX(-50%)}
+  @keyframes rot{to{transform:rotate(360deg)}}
+
+  /* Contact */
+  .contact{display:grid;grid-template-columns:1fr 1.1fr;gap:46px;align-items:start}
+  .cinfo .row{display:flex;gap:15px;align-items:flex-start;padding:18px 0;border-bottom:1px solid var(--line)}
+  .cinfo .row:first-of-type{padding-top:0}
+  .cinfo .ic{width:44px;height:44px;border-radius:12px;flex:0 0 auto;display:grid;place-items:center;background:linear-gradient(135deg,rgba(132,204,22,.22),rgba(163,230,53,.12));border:1px solid var(--glass-brd);color:var(--lime-deep)}
+  .cinfo .ic svg{width:20px;height:20px}
+  .cinfo .row b{font-family:"Space Grotesk";font-size:15px;display:block}
+  .cinfo .row span{color:var(--ink-soft);font-size:14.5px}
+  .cinfo .row a{color:var(--lime-deep)}
+  .map{margin-top:22px;height:170px;border-radius:16px;border:1px solid var(--glass-brd);display:grid;place-items:center;background:linear-gradient(135deg,rgba(132,204,22,.12),rgba(251,247,238,.6));color:var(--ink-soft);font-size:14px;text-align:center;position:relative;overflow:hidden}
+  .map .grid2{position:absolute;inset:0;background-image:linear-gradient(rgba(77,124,15,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(77,124,15,.12) 1px,transparent 1px);background-size:30px 30px;opacity:.6}
+  .map svg{width:30px;height:30px;color:var(--lime-deep);margin-bottom:8px}
+  form.cform{padding:30px;background:var(--cream)}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:13.5px;color:#3f3d33;margin-bottom:7px;font-family:"Space Grotesk";font-weight:500}
+  .field input,.field select,.field textarea{width:100%;padding:13px 15px;border-radius:11px;background:var(--beige-2);border:1px solid var(--glass-brd);color:var(--ink);font-family:"DM Sans";font-size:15px;transition:border-color .2s,box-shadow .2s}
+  .field textarea{resize:vertical;min-height:110px}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--lime-2);box-shadow:0 0 0 3px rgba(132,204,22,.22)}
+  .field select{appearance:none;cursor:pointer}
+  .field .err{color:#dc2626;font-size:12.5px;margin-top:6px;display:none}
+  .field.invalid input,.field.invalid select,.field.invalid textarea{border-color:#dc2626}
+  .field.invalid .err{display:block}
+  .grid2c{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .form-ok{display:none;padding:18px;border-radius:12px;background:rgba(132,204,22,.14);border:1px solid var(--lime-2);color:var(--lime-deep);font-size:14.5px;margin-top:4px;text-align:center}
+  .form-ok.show{display:block;animation:okpop .5s cubic-bezier(.3,1.3,.5,1)}
+  @keyframes okpop{0%{opacity:0;transform:scale(.9)}100%{opacity:1;transform:scale(1)}}
+  .check-anim{width:54px;height:54px;margin:0 auto 10px;border-radius:50%;background:var(--lime-2);display:grid;place-items:center}
+  .check-anim svg{width:30px;height:30px;stroke:#fff;fill:none;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:40;stroke-dashoffset:40;animation:draw .5s ease .2s forwards}
+
+  /* Footer */
+  footer{border-top:1px solid var(--line);padding:60px 0 30px;margin-top:40px;background:var(--beige-2)}
+  .foot{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:34px}
+  .foot .brand{margin-bottom:14px}
+  .foot p{color:var(--ink-soft);font-size:14.5px;max-width:30ch}
+  .foot h5{font-family:"Space Grotesk";font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#3f3d33;margin-bottom:16px}
+  .foot ul{list-style:none;display:flex;flex-direction:column;gap:11px}
+  .foot ul a{color:var(--ink-soft);font-size:14.5px;transition:color .2s}
+  .foot ul a:hover{color:var(--lime-deep)}
+  .foot-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-top:44px;padding-top:24px;border-top:1px solid var(--line);color:var(--ink-soft);font-size:13.5px}
+  .socials{display:flex;gap:10px}
+  .socials a{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--cream);border:1px solid var(--glass-brd);color:var(--ink-soft);transition:.2s}
+  .socials a:hover{color:var(--lime-deep);border-color:var(--lime-2);transform:translateY(-2px)}
+  .socials svg{width:18px;height:18px}
+
+  /* Floating widgets */
+  .floats{position:fixed;right:22px;bottom:22px;z-index:300;display:flex;flex-direction:column;gap:12px}
+  .fab{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;cursor:pointer;transition:transform .2s}
+  .fab:hover{transform:scale(1.08)}
+  .fab svg{width:28px;height:28px;color:#fff}
+  .fab.wa{background:#25D366;box-shadow:0 12px 30px -8px rgba(37,211,102,.6);animation:bob 4s ease-in-out infinite}
+  .fab.call{background:linear-gradient(135deg,var(--lime-2),var(--lime-deep))}
+  @keyframes bob{50%{transform:translateY(-4px)}}
+
+  .chat-fab{position:fixed;left:22px;bottom:22px;z-index:300;display:inline-flex;align-items:center;gap:10px;padding:12px 18px 12px 14px;border-radius:999px;cursor:pointer;border:1px solid var(--lime-deep);background:linear-gradient(135deg,var(--lime-2),var(--lime));color:var(--ink);font-family:"Space Grotesk";font-weight:600;font-size:14px;box-shadow:0 12px 30px -12px rgba(101,163,13,.7);transition:transform .2s}
+  .chat-fab:hover{transform:translateY(-2px)}
+  .chat-fab svg{width:20px;height:20px}
+  .chat-panel{position:fixed;left:22px;bottom:88px;z-index:301;width:330px;max-width:calc(100vw - 44px);background:var(--cream);border:1px solid var(--glass-brd);border-radius:18px;overflow:hidden;box-shadow:0 30px 70px -20px rgba(40,50,15,.5);display:none;flex-direction:column}
+  .chat-panel.open{display:flex;animation:fade .3s ease}
+  .chat-head{padding:16px 18px;background:linear-gradient(135deg,var(--lime-2),var(--lime-deep));display:flex;align-items:center;gap:11px;color:#fff}
+  .chat-head .av{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.22);display:grid;place-items:center;font-weight:700;font-family:"Space Grotesk"}
+  .chat-head b{font-family:"Space Grotesk";font-size:15px;display:block;line-height:1.2}
+  .chat-head span{font-size:12px;opacity:.9}
+  .chat-head .x{margin-left:auto;cursor:pointer;opacity:.9;font-size:20px;background:none;border:0;color:#fff}
+  .chat-body{padding:16px;display:flex;flex-direction:column;gap:11px;max-height:300px;overflow-y:auto}
+  .msg{max-width:82%;padding:11px 14px;border-radius:14px;font-size:14px;line-height:1.45}
+  .msg.bot{background:var(--beige-2);border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+  .msg.user{background:linear-gradient(135deg,var(--lime-2),var(--lime));color:var(--ink);align-self:flex-end;border-bottom-right-radius:4px}
+  .chat-quick{display:flex;gap:8px;flex-wrap:wrap;padding:0 16px 12px}
+  .chat-quick button{font-size:12.5px;padding:7px 12px;border-radius:999px;background:var(--beige-2);border:1px solid var(--glass-brd);color:var(--lime-deep);cursor:pointer;font-family:"DM Sans";transition:.2s}
+  .chat-quick button:hover{border-color:var(--lime-2);color:var(--ink)}
+  .chat-input{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--line)}
+  .chat-input input{flex:1;padding:11px 13px;border-radius:10px;background:var(--beige-2);border:1px solid var(--glass-brd);color:var(--ink);font-family:"DM Sans";font-size:14px}
+  .chat-input input:focus{outline:none;border-color:var(--lime-2)}
+  .chat-input button{width:42px;border-radius:10px;border:0;background:linear-gradient(135deg,var(--lime-2),var(--lime-deep));color:#fff;cursor:pointer;display:grid;place-items:center}
+  .chat-input svg{width:18px;height:18px}
+
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  .mobile-menu{display:none;position:fixed;inset:auto 0 auto 0;top:112px;z-index:199;background:rgba(251,247,238,.98);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:20px 22px 26px}
+  .mobile-menu.open{display:block;animation:fade .25s ease}
+  .mobile-menu a{display:block;padding:13px 0;color:var(--ink-soft);font-family:"Space Grotesk";font-weight:500;border-bottom:1px solid var(--line)}
+  .mobile-menu .btn{margin-top:16px;width:100%}
+
+  @media(max-width:980px){
+    .menu{display:none}.burger{display:inline-flex}.call-btn span{display:none}
+    .svc-grid,.portfolio,.pricing{grid-template-columns:1fr 1fr}
+    .stats{grid-template-columns:1fr 1fr}
+    .why,.about,.contact{grid-template-columns:1fr;gap:34px}
+    .foot{grid-template-columns:1fr 1fr}.tilt > *{transform:none}
+  }
+  @media(max-width:620px){
+    .block{padding:70px 0}.hero{padding:120px 0 60px;min-height:auto}
+    .svc-grid,.portfolio,.pricing,.grid2c,.vv{grid-template-columns:1fr}
+    .cta-banner{padding:44px 24px}.foot{grid-template-columns:1fr}
+    form.cform{padding:22px}.chat-fab span{display:none}.chat-fab{padding:14px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+    .reveal{opacity:1;transform:none}.marquee-track{animation:none!important}
+    .lp{stroke-dashoffset:0!important}.lnode{transform:scale(1)!important}.globe{opacity:1!important}.load-word,.load-tag,.load-bar{opacity:1!important}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== Animated intro / loading page ===== -->
+<div id="loader">
+  <svg class="logo-mark" viewBox="0 0 100 100" aria-label="WEBRO logo">
+    <defs>
+      <linearGradient id="limeGrad" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0" stop-color="#4D7C0F"/><stop offset="1" stop-color="#A3E635"/>
+      </linearGradient>
+    </defs>
+    <polyline class="lp lp-chart" points="20,40 38,30 56,34 78,20"/>
+    <circle class="lnode n1" cx="20" cy="40" r="3.1"/>
+    <circle class="lnode n2" cx="38" cy="30" r="3.1"/>
+    <circle class="lnode n3" cx="56" cy="34" r="3.1"/>
+    <circle class="lnode n4" cx="78" cy="20" r="3.4"/>
+    <path class="lp lp-w" d="M16,34 L30,74 L50,44 L70,74 L84,30"/>
+    <path class="lp lp-arrow" d="M84,30 L72,32 M84,30 L82,42"/>
+    <g class="globe" transform="translate(50,56)">
+      <circle r="9" fill="none" stroke-width="2"/>
+      <ellipse class="merid" rx="4.2" ry="9" fill="none" stroke-width="1.6"/>
+      <line x1="-9" y1="0" x2="9" y2="0" stroke-width="1.6"/>
+    </g>
+  </svg>
+  <div class="load-word">WEB<b>RO</b></div>
+  <div class="load-tag">Website Development</div>
+  <div class="load-bar"><span></span></div>
+</div>
+
+<div class="bg-fx" aria-hidden="true">
+  <div class="grid"></div><div class="blob a"></div><div class="blob b"></div><div class="blob c"></div>
+</div>
+
+<div class="topbar">🌱 Free quote in 24 hours — Call us now: <a href="tel:+917073701158">+91 70737 01158</a></div>
+
+<!-- Navbar -->
+<header id="hdr">
+  <div class="wrap">
+    <nav class="nav">
+      <a href="#home" class="brand">
+        <svg class="logo-mark" viewBox="0 0 100 100" aria-label="WEBRO">
+          <polyline class="lp lp-chart" points="20,40 38,30 56,34 78,20"/>
+          <circle class="lnode n1" cx="20" cy="40" r="3.1"/><circle class="lnode n2" cx="38" cy="30" r="3.1"/>
+          <circle class="lnode n3" cx="56" cy="34" r="3.1"/><circle class="lnode n4" cx="78" cy="20" r="3.4"/>
+          <path class="lp lp-w" d="M16,34 L30,74 L50,44 L70,74 L84,30"/>
+          <path class="lp lp-arrow" d="M84,30 L72,32 M84,30 L82,42"/>
+          <g class="globe" transform="translate(50,56)"><circle r="9" fill="none" stroke-width="2"/><ellipse class="merid" rx="4.2" ry="9" fill="none" stroke-width="1.6"/><line x1="-9" y1="0" x2="9" y2="0" stroke-width="1.6"/></g>
+        </svg>
+        WEB<b>RO</b>
+      </a>
+      <div class="menu">
+        <a href="#services">Services</a><a href="#work">Work</a><a href="#pricing">Pricing</a>
+        <a href="#about">About</a><a href="#faq">FAQ</a><a href="#contact">Contact</a>
+      </div>
+      <div class="nav-actions">
+        <a href="tel:+917073701158" class="call-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M5 4h4l2 5-3 2a12 12 0 005 5l2-3 5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/></svg><span>+91 70737 01158</span></a>
+        <a href="#contact" class="btn btn-primary btn-sm">Get Free Quote</a>
+        <button class="burger" id="burger" aria-label="Open menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      </div>
+    </nav>
+  </div>
+</header>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#services">Services</a><a href="#work">Work</a><a href="#pricing">Pricing</a>
+  <a href="#about">About</a><a href="#faq">FAQ</a><a href="#contact">Contact</a>
+  <a href="tel:+917073701158" class="btn btn-ghost">Call +91 70737 01158</a>
+  <a href="#contact" class="btn btn-primary">Get Free Quote</a>
+</div>
+
+<!-- Hero -->
+<section class="hero" id="home">
+  <canvas id="three" aria-hidden="true"></canvas>
+  <div class="hero-veil" aria-hidden="true"></div>
+  <div class="wrap">
+    <span class="pill reveal"><i></i> Available for new projects — India & International</span>
+    <h1 class="reveal">We Don't Just Build Websites — <em>We Build Businesses</em></h1>
+    <p class="sub reveal">WEBRO delivers stunning, high-performance digital solutions that turn visitors into paying clients. Build Smart. Grow Faster. Powered by AI.</p>
+    <div class="hero-cta reveal">
+      <a href="#contact" class="btn btn-primary">Get Free Quote <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:17px;height:17px"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a href="#work" class="btn btn-ghost">View Our Work</a>
+    </div>
+    <div class="hero-strip reveal">
+      <div><b>120+</b> Projects Delivered</div><div><b>90+</b> Happy Clients</div>
+      <div><b>12+</b> Countries Served</div><div><b>4.9/5</b> Avg. Rating</div>
+    </div>
+  </div>
+</section>
+
+<!-- Flag marquee -->
+<section style="padding:18px 0 6px">
+  <div class="wrap" style="text-align:center;margin-bottom:14px"><span class="eyebrow">Serving businesses worldwide</span></div>
+  <div class="marquee"><div class="marquee-track" id="flagTrack"></div></div>
+</section>
+
+<!-- Services -->
+<section class="block" id="services">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="eyebrow">What We Do</span><h2>Everything you need to launch &amp; scale</h2><p>One team, six core services, and an AI-first approach that ships results — not just deliverables.</p></div>
+    <div class="svc-grid">
+      <div class="svc glass tilt reveal"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5h18v14H3z"/><path d="M3 9h18M8 13l2 2-2 2M13 17h3"/></svg></div><h3>Website Development</h3><p>Custom, lightning-fast, modern sites built to convert and rank.</p><ul class="feat"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Next.js &amp; React builds</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> 90+ PageSpeed scores</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Fully responsive</li></ul><a href="#contact" class="svc-link">Start a project <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+      <div class="svc glass tilt reveal"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 000 18M3 12h18"/></svg></div><h3>UI/UX &amp; Logo Design</h3><p>Figma-based interfaces and brand identities people remember.</p><ul class="feat"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Brand identity systems</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Logo &amp; style guides</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Interactive prototypes</li></ul><a href="#contact" class="svc-link">Start a project <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+      <div class="svc glass tilt reveal"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 4h2l2.4 12.2a2 2 0 002 1.6h7.7a2 2 0 002-1.6L21 7H7"/><circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/></svg></div><h3>E-commerce Stores</h3><p>Shopify, WooCommerce &amp; custom stores that actually sell.</p><ul class="feat"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Payment integrations</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Inventory &amp; orders</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Conversion-optimized</li></ul><a href="#contact" class="svc-link">Start a project <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+      <div class="svc glass tilt reveal"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></div><h3>Mobile App Development</h3><p>React Native apps for Android &amp; iOS from a single codebase.</p><ul class="feat"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Android + iOS</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Native performance</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> App Store launch help</li></ul><a href="#contact" class="svc-link">Start a project <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+      <div class="svc glass tilt reveal"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div><h3>SEO &amp; Digital Marketing</h3><p>Rank on Google, grow traffic, and dominate your local market.</p><ul class="feat"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Technical &amp; local SEO</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Google Business setup</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Performance reporting</li></ul><a href="#contact" class="svc-link">Start a project <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+      <div class="svc glass tilt reveal"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2"/><circle cx="12" cy="12" r="3.2"/></svg></div><h3>AI Automation</h3><p>Chatbots, lead capture &amp; workflows that work while you sleep.</p><ul class="feat"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> AI chat assistants</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Auto lead follow-up</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Smart integrations</li></ul><a href="#contact" class="svc-link">Start a project <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+    </div>
+  </div>
+</section>
+
+<!-- Tech marquee -->
+<section style="padding:6px 0 36px">
+  <div class="wrap" style="text-align:center;margin-bottom:18px"><span class="eyebrow">Technologies we build with</span></div>
+  <div class="marquee"><div class="marquee-track" id="techTrack"></div></div>
+</section>
+
+<!-- Stats -->
+<section class="block" style="padding-top:0">
+  <div class="wrap"><div class="stats">
+    <div class="stat glass reveal"><div class="num" data-count="120" data-suffix="+">0</div><div class="lbl">Projects Done</div></div>
+    <div class="stat glass reveal"><div class="num" data-count="90" data-suffix="+">0</div><div class="lbl">Happy Clients</div></div>
+    <div class="stat glass reveal"><div class="num" data-count="12" data-suffix="+">0</div><div class="lbl">Countries Served</div></div>
+    <div class="stat glass reveal"><div class="num" data-count="98" data-suffix="%">0</div><div class="lbl">Client Retention</div></div>
+  </div></div>
+</section>
+
+<!-- Why -->
+<section class="block" style="padding-top:0">
+  <div class="wrap"><div class="why">
+    <div class="reveal">
+      <span class="eyebrow">Why WEBRO</span>
+      <h2 style="font-size:clamp(28px,4.2vw,42px);font-weight:700">A small team that moves like a big agency</h2>
+      <div class="why-list">
+        <div class="why-item"><div class="wi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2L3 14h7l-1 8 11-12h-7z"/></svg></div><div><h4>AI-Powered, Results-Driven</h4><p>We use AI across design, code, and marketing to ship faster and smarter than agencies twice our size.</p></div></div>
+        <div class="why-item"><div class="wi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><h4>Fast Turnaround</h4><p>Most business sites go live in 7–14 days, without cutting corners on quality or performance.</p></div></div>
+        <div class="why-item"><div class="wi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg></div><div><h4>Direct Founder Access</h4><p>You talk to the people building your project — no account managers, no telephone game.</p></div></div>
+        <div class="why-item"><div class="wi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div><div><h4>Built to Grow</h4><p>Clean, scalable code and SEO foundations so your site keeps performing long after launch.</p></div></div>
+      </div>
+    </div>
+    <div class="why-visual glass reveal">
+      <div class="vchip"><span class="d"></span><b>Design approved</b><span>Day 2</span></div>
+      <div class="vchip"><span class="d"></span><b>Development live</b><span>Day 9</span></div>
+      <div class="vchip"><span class="d"></span><b>SEO + handover</b><span>Day 12</span></div>
+      <div class="vchip"><span class="d"></span><b>First lead captured</b><span>Day 15</span></div>
+      <div style="margin-top:20px;padding:18px;border-radius:14px;background:linear-gradient(135deg,rgba(132,204,22,.2),rgba(163,230,53,.1));border:1px solid var(--glass-brd)"><div style="font-family:'Space Grotesk';font-weight:700;font-size:26px;color:var(--lime-deep)">+212%</div><div style="color:var(--ink-soft);font-size:13.5px">Avg. increase in qualified leads after launch</div></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- Portfolio -->
+<section class="block" id="work">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="eyebrow">Selected Work</span><h2>Projects that grew real businesses</h2><p>A snapshot of recent builds across web, e-commerce, and mobile. Live links shown for demonstration.</p></div>
+    <div class="filters reveal"><button class="active" data-filter="all">All</button><button data-filter="web">Websites</button><button data-filter="ecom">E-commerce</button><button data-filter="app">Apps</button><button data-filter="brand">Branding</button></div>
+    <div class="portfolio">
+      <article class="proj tilt reveal" data-cat="ecom"><div class="thumb" style="background:linear-gradient(135deg,#7d9b54,#aebd7f)">Spice Route</div><div class="body"><span class="tag">E-commerce</span><h3>Spice Route — Restaurant Ordering</h3><p class="tech">Next.js · Razorpay · Tailwind</p><a class="live" href="#">Live demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg></a></div></article>
+      <article class="proj tilt reveal" data-cat="web"><div class="thumb" style="background:linear-gradient(135deg,#4d6b2e,#8aa758)">Lumen Cafe</div><div class="body"><span class="tag">Website</span><h3>Lumen Cafe — Booking Site</h3><p class="tech">React · Framer Motion · CMS</p><a class="live" href="#">Live demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg></a></div></article>
+      <article class="proj tilt reveal" data-cat="app"><div class="thumb" style="background:linear-gradient(135deg,#8ba85f,#c7d3a6)">FitPulse</div><div class="body"><span class="tag">Mobile App</span><h3>FitPulse — Fitness Tracker</h3><p class="tech">React Native · Firebase</p><a class="live" href="#">Live demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg></a></div></article>
+      <article class="proj tilt reveal" data-cat="brand"><div class="thumb" style="background:linear-gradient(135deg,#6f8f3f,#bcca92)">Nova Estate</div><div class="body"><span class="tag">Branding</span><h3>Nova Estate — Identity System</h3><p class="tech">Figma · Logo · Style Guide</p><a class="live" href="#">View case <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg></a></div></article>
+      <article class="proj tilt reveal" data-cat="web"><div class="thumb" style="background:linear-gradient(135deg,#7d9b54,#c2cf9b)">Atlas Realty</div><div class="body"><span class="tag">Website</span><h3>Atlas Realty — Property Portal</h3><p class="tech">Next.js · Maps API · SEO</p><a class="live" href="#">Live demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg></a></div></article>
+      <article class="proj tilt reveal" data-cat="ecom"><div class="thumb" style="background:linear-gradient(135deg,#4d6b2e,#a3b878)">Bloom &amp; Co</div><div class="body"><span class="tag">E-commerce</span><h3>Bloom &amp; Co — Shopify Store</h3><p class="tech">Shopify · Custom Theme</p><a class="live" href="#">Live demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg></a></div></article>
+    </div>
+    <div class="glass reveal" style="margin-top:32px;padding:34px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;text-align:center;background:var(--cream)">
+      <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:34px;color:var(--lime-deep)">2.8s → 0.9s</div><div style="color:var(--ink-soft);font-size:14px;margin-top:4px">Load time, Spice Route</div></div>
+      <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:34px;color:var(--lime-deep)">3.4x</div><div style="color:var(--ink-soft);font-size:14px;margin-top:4px">Online orders in 60 days</div></div>
+      <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:34px;color:var(--lime-deep)">#1</div><div style="color:var(--ink-soft);font-size:14px;margin-top:4px">Local Google ranking</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="block" id="pricing">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="eyebrow">Pricing</span><h2>Simple plans, serious results</h2><p>Transparent packages for businesses of every size. Custom quotes available — these are starting points.</p></div>
+    <div class="pricing">
+      <div class="plan glass reveal"><h3>Starter</h3><div class="price">₹14,999<small>/project</small></div><p class="desc">Perfect for local shops, cafes &amp; freelancers getting online.</p><ul><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Up to 5-page website</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Mobile responsive</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Contact form + WhatsApp</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Basic on-page SEO</li></ul><a href="#contact" class="btn btn-ghost">Choose Starter</a></div>
+      <div class="plan glass feat-plan reveal"><span class="ribbon">Most Popular</span><h3>Business</h3><div class="price">₹39,999<small>/project</small></div><p class="desc">For startups &amp; growing brands that need to convert and scale.</p><ul><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Up to 12 pages + CMS</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Custom UI/UX design</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> AI chatbot integration</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Advanced SEO + analytics</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> 30 days support</li></ul><a href="#contact" class="btn btn-primary">Choose Business</a></div>
+      <div class="plan glass reveal"><h3>Premium</h3><div class="price">₹89,999<small>+</small></div><p class="desc">Full e-commerce, apps &amp; marketing for serious scale.</p><ul><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> E-commerce or mobile app</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Payment integration</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Brand identity + logo</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Ongoing SEO &amp; marketing</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4 10-10"/></svg> Priority 90-day support</li></ul><a href="#contact" class="btn btn-ghost">Choose Premium</a></div>
+    </div>
+    <p style="text-align:center;color:var(--ink-soft);font-size:13.5px;margin-top:22px">Razorpay &amp; Stripe ready · GST invoicing · 50% to start, 50% on delivery</p>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="block" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="eyebrow">Testimonials</span><h2>Loved by founders &amp; local businesses</h2></div>
+    <div class="tslider glass reveal" style="padding:8px">
+      <div class="tcard on"><div class="stars">★★★★★</div><q>WEBRO rebuilt our cafe site in 10 days and our online orders tripled. The AI chatbot answers customers before we even wake up.</q><div class="who"><div class="av">RK</div><div style="text-align:left"><b>Rohan Kapoor</b><span>Owner, Lumen Cafe · Jaipur</span></div></div></div>
+      <div class="tcard"><div class="stars">★★★★★</div><q>Easily the most responsive team I've worked with. Clean design, fast site, and we finally rank on the first page of Google.</q><div class="who"><div class="av">SA</div><div style="text-align:left"><b>Sara Ahmed</b><span>Founder, Bloom &amp; Co</span></div></div></div>
+      <div class="tcard"><div class="stars">★★★★★</div><q>They built our real-estate portal and a matching mobile app. Professional, on time, and genuinely invested in our growth.</q><div class="who"><div class="av">VP</div><div style="text-align:left"><b>Vikram Patel</b><span>Director, Atlas Realty</span></div></div></div>
+      <div class="tdots"><button class="on" aria-label="Testimonial 1"></button><button aria-label="Testimonial 2"></button><button aria-label="Testimonial 3"></button></div>
+    </div>
+  </div>
+</section>
+
+<!-- About -->
+<section class="block" id="about">
+  <div class="wrap"><div class="about">
+    <div class="reveal">
+      <span class="eyebrow">About WEBRO</span>
+      <h2 style="font-size:clamp(28px,4.2vw,42px);font-weight:700">Why we started WEBRO</h2>
+      <p class="lead">We watched brilliant small businesses lose customers to outdated websites and big agencies that overcharged and underdelivered.</p>
+      <p>So in Jaipur, three builders set out to change that — a lean, AI-first studio that gives cafes, startups, and local shops the kind of digital presence usually reserved for big budgets. We pair sharp design with smart automation so your business looks world-class and runs smarter.</p>
+      <p>Today WEBRO serves clients across India and internationally, but the mission is unchanged: <strong style="color:var(--ink)">make great technology accessible to the businesses that need it most.</strong></p>
+      <div class="founder glass"><div class="av">VM</div><div><b>Vishnu Mehra</b><br><span>CEO &amp; Founder · WEBRO</span></div></div>
+    </div>
+    <div class="reveal">
+      <div class="vv">
+        <div class="card glass"><h4>Our Mission</h4><p>To turn small businesses into market leaders with smart, beautiful, AI-powered digital solutions.</p></div>
+        <div class="card glass"><h4>Our Vision</h4><p>A web where every local brand can compete with the giants — and win.</p></div>
+        <div class="card glass"><h4>How We Work</h4><p>Fast, transparent, and collaborative. You're in the loop at every step, start to launch.</p></div>
+        <div class="card glass"><h4>Our Values</h4><p>Craft over shortcuts. Results over vanity. Honesty over hype — every single time.</p></div>
+      </div>
+      <div class="glass card reveal" style="margin-top:16px;padding:24px;background:var(--cream)"><h4 style="font-family:'Space Grotesk';color:var(--lime-deep);margin-bottom:10px">The team</h4><p style="color:var(--ink-soft);font-size:14.5px;margin:0">A tight team of 3 — design, development, and growth — working as one unit so nothing gets lost in handoffs.</p></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- FAQ -->
+<section class="block" id="faq">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="eyebrow">FAQ</span><h2>Questions, answered</h2></div>
+    <div class="faq">
+      <div class="qa reveal"><button>How long does a website take? <span class="plus"></span></button><div class="ans"><p>Most business websites go live in 7–14 days. E-commerce stores and apps take 3–6 weeks depending on scope. We'll give you a clear timeline in your free quote.</p></div></div>
+      <div class="qa reveal"><button>Do you work with international clients? <span class="plus"></span></button><div class="ans"><p>Absolutely. We're based in Jaipur, India, and serve clients across 12+ countries. We work async over email, WhatsApp, and scheduled calls in your timezone.</p></div></div>
+      <div class="qa reveal"><button>What does it cost? <span class="plus"></span></button><div class="ans"><p>Our packages start at ₹14,999 for a starter site. Business and Premium plans scale with features. Every project gets a custom, no-obligation quote first.</p></div></div>
+      <div class="qa reveal"><button>Will my site rank on Google? <span class="plus"></span></button><div class="ans"><p>Every site we build ships with technical SEO, fast load times, and clean structure. Our Business and Premium plans add ongoing SEO and local Google Business optimization.</p></div></div>
+      <div class="qa reveal"><button>Do you offer support after launch? <span class="plus"></span></button><div class="ans"><p>Yes — every plan includes a support window (30–90 days), and we offer affordable monthly care plans for updates, backups, and improvements.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="block" style="padding-top:0">
+  <div class="wrap"><div class="cta-banner reveal">
+    <div class="cta-orbit"></div>
+    <h2>Ready to grow? Let's build together.</h2>
+    <p>Get a free quote within 24 hours. No pressure, no jargon — just a clear plan to launch and scale.</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+      <a href="#contact" class="btn btn-ghost">Get Free Quote</a>
+      <a href="tel:+917073701158" class="btn btn-ghost">Call +91 70737 01158</a>
+    </div>
+  </div></div>
+</section>
+
+<!-- Contact -->
+<section class="block" id="contact">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="eyebrow">Get in touch</span><h2>Let's talk about your project</h2><p>Fill the form or reach out directly. We reply within one business day.</p></div>
+    <div class="contact">
+      <div class="cinfo reveal">
+        <div class="row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M4 6l8 6 8-6"/></svg></div><div><b>Email us</b><span><a href="mailto:webro284@gmail.com">webro284@gmail.com</a></span></div></div>
+        <div class="row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h4l2 5-3 2a12 12 0 005 5l2-3 5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/></svg></div><div><b>Call / WhatsApp</b><span><a href="tel:+917073701158">+91 70737 01158</a></span></div></div>
+        <div class="row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-5.5-7-11a7 7 0 0114 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div><div><b>Office</b><span>Jaipur, Rajasthan, India</span></div></div>
+        <div class="row" id="book" style="border-bottom:0"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg></div><div><b>Book an appointment</b><span>Mon–Sat · 10am–7pm IST · Reply within a day</span></div></div>
+      </div>
+      <form class="cform glass reveal" id="contactForm" novalidate>
+        <div class="grid2c"><div class="field"><label for="name">Name</label><input id="name" type="text" placeholder="Your name" /><div class="err">Please enter your name.</div></div><div class="field"><label for="email">Email</label><input id="email" type="email" placeholder="you@email.com" /><div class="err">Enter a valid email address.</div></div></div>
+        <div class="grid2c"><div class="field"><label for="phone">Phone</label><input id="phone" type="tel" placeholder="+91 ..." /><div class="err">Enter a valid phone number.</div></div><div class="field"><label for="service">Service needed</label><select id="service"><option value="">Select a service</option><option>Website Development</option><option>UI/UX &amp; Logo Design</option><option>E-commerce Store</option><option>Mobile App</option><option>SEO &amp; Marketing</option><option>AI Automation</option></select><div class="err">Please choose a service.</div></div></div>
+        <div class="field"><label for="message">Message</label><textarea id="message" placeholder="Tell us about your project..."></textarea><div class="err">Please add a short message.</div></div>
+        <button type="submit" class="btn btn-primary" style="width:100%">Send Message <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:17px;height:17px"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+        <div class="form-ok" id="formOk"><div class="check-anim"><svg viewBox="0 0 24 24"><path d="M5 13l4 4 10-11"/></svg></div><b>Thanks! Your message is ready.</b><br><span style="font-size:13px">This is a demo — connect it to email or a form service in the live build.</span></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <a href="#home" class="brand">
+          <svg class="logo-mark" viewBox="0 0 100 100" aria-label="WEBRO">
+            <path class="lp lp-w" d="M16,34 L30,74 L50,44 L70,74 L84,30" style="stroke-dashoffset:0"/>
+            <path class="lp lp-arrow" d="M84,30 L72,32 M84,30 L82,42" style="stroke-dashoffset:0"/>
+            <g class="globe" style="opacity:1" transform="translate(50,56)"><circle r="9" fill="none" stroke-width="2"/><ellipse class="merid" rx="4.2" ry="9" fill="none" stroke-width="1.6"/><line x1="-9" y1="0" x2="9" y2="0" stroke-width="1.6"/></g>
+          </svg>
+          WEB<b>RO</b>
+        </a>
+        <p>Build Smart. Grow Faster. Powered by AI. A modern web &amp; AI agency for businesses ready to scale.</p>
+        <div class="socials" style="margin-top:18px">
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
+          <a href="mailto:webro284@gmail.com" aria-label="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M4 6l8 6 8-6"/></svg></a>
+          <a href="https://wa.me/917073701158" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-2.8.8.7-2.8-.2-.3A8 8 0 1112 20z"/></svg></a>
+        </div>
+      </div>
+      <div><h5>Services</h5><ul><li><a href="#services">Web Development</a></li><li><a href="#services">UI/UX &amp; Logo</a></li><li><a href="#services">E-commerce</a></li><li><a href="#services">Mobile Apps</a></li><li><a href="#services">SEO &amp; Marketing</a></li></ul></div>
+      <div><h5>Company</h5><ul><li><a href="#about">About Us</a></li><li><a href="#work">Portfolio</a></li><li><a href="#pricing">Pricing</a></li><li><a href="#faq">FAQ</a></li><li><a href="#contact">Contact</a></li></ul></div>
+      <div><h5>Get started</h5><ul><li><a href="#contact">Get Free Quote</a></li><li><a href="tel:+917073701158">+91 70737 01158</a></li><li><a href="mailto:webro284@gmail.com">webro284@gmail.com</a></li><li><a href="#contact">Jaipur, India</a></li></ul></div>
+    </div>
+    <div class="foot-bottom"><span>© 2026 WEBRO. All rights reserved.</span><span>Made with AI in Jaipur, India 🇮🇳</span></div>
+  </div>
+</footer>
+
+<!-- Floating: Call + WhatsApp -->
+<div class="floats">
+  <a class="fab call" href="tel:+917073701158" aria-label="Call WEBRO"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M5 4h4l2 5-3 2a12 12 0 005 5l2-3 5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/></svg></a>
+  <a class="fab wa" href="https://wa.me/917073701158?text=Hi%20WEBRO!%20I'd%20like%20a%20free%20quote." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm0 18.13c-1.52 0-3.01-.41-4.3-1.18l-.31-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 01-1.26-4.35c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 012.41 5.82c0 4.54-3.7 8.23-8.25 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.23.25-.86.85-.86 2.07s.89 2.4 1.01 2.56c.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.11-.22-.17-.47-.29z"/></svg></a>
+</div>
+
+<!-- AI chatbot -->
+<button class="chat-fab" id="chatFab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 12a8 8 0 01-8 8H7l-4 3v-5a8 8 0 018-11h2a8 8 0 018 8z"/></svg> Ask WEBRO AI</button>
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-head"><div class="av">W</div><div><b>WEBRO AI</b><span>Typically replies instantly</span></div><button class="x" id="chatClose" aria-label="Close chat">×</button></div>
+  <div class="chat-body" id="chatBody"><div class="msg bot">Hi! How can I help you today? Ask me about services, pricing, or timelines 👋</div></div>
+  <div class="chat-quick"><button data-q="pricing">💰 Pricing</button><button data-q="time">⏱️ Timeline</button><button data-q="services">🛠️ Services</button><button data-q="contact">📞 Contact</button></div>
+  <div class="chat-input"><input id="chatInput" type="text" placeholder="Type a message..." /><button id="chatSend" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></button></div>
+</div>
+
+<script>
+/* Loader hides a touch later so the logo animation plays */
+window.addEventListener('load', () => setTimeout(() => document.getElementById('loader').classList.add('hide'), 2100));
+
+const hdr = document.getElementById('hdr');
+const onScroll = () => hdr.classList.toggle('scrolled', window.scrollY > 30);
+window.addEventListener('scroll', onScroll); onScroll();
+const burger = document.getElementById('burger'), mobileMenu = document.getElementById('mobileMenu');
+burger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
+
+const io = new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} }), { threshold:.12 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+const cio = new IntersectionObserver((es) => es.forEach(e => {
+  if (!e.isIntersecting) return;
+  const el = e.target, target = +el.dataset.count, suf = el.dataset.suffix || '';
+  let n = 0; const step = Math.max(1, Math.round(target/45));
+  const t = setInterval(() => { n += step; if (n >= target){ n = target; clearInterval(t);} el.textContent = n + suf; }, 26);
+  cio.unobserve(el);
+}), { threshold:.5 });
+document.querySelectorAll('.num[data-count]').forEach(c => cio.observe(c));
+
+const countries = [['India','in'],['UAE','ae'],['Saudi Arabia','sa'],['Qatar','qa'],['Singapore','sg'],['USA','us'],['Canada','ca'],['UK','gb'],['Germany','de'],['Australia','au'],['Japan','jp'],['Netherlands','nl']];
+const techs = [['React','react/react-original'],['Next.js','nextjs/nextjs-original'],['Node.js','nodejs/nodejs-original'],['JavaScript','javascript/javascript-original'],['TypeScript','typescript/typescript-original'],['Tailwind','tailwindcss/tailwindcss-original'],['Figma','figma/figma-original'],['WordPress','wordpress/wordpress-plain'],['Python','python/python-original'],['Firebase','firebase/firebase-plain'],['Flutter','flutter/flutter-original'],['PHP','php/php-original']];
+function fill(track, items, builder){ const html = items.map(builder).join(''); track.innerHTML = html + html; }
+fill(document.getElementById('flagTrack'), countries, ([n,c]) => `<span class="flag"><img src="https://flagcdn.com/w80/${c}.png" alt="${n}" loading="lazy"/>${n}</span>`);
+fill(document.getElementById('techTrack'), techs, ([n,p]) => `<span class="tech-chip"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${p}.svg" alt="${n}" loading="lazy"/>${n}</span>`);
+
+const fbtns = document.querySelectorAll('.filters button'), projs = document.querySelectorAll('.proj');
+fbtns.forEach(b => b.addEventListener('click', () => {
+  fbtns.forEach(x => x.classList.remove('active')); b.classList.add('active');
+  const f = b.dataset.filter;
+  projs.forEach(p => p.style.display = (f === 'all' || p.dataset.cat === f) ? '' : 'none');
+}));
+
+const tcards = document.querySelectorAll('.tcard'), tdots = document.querySelectorAll('.tdots button');
+let ti = 0;
+function showT(i){ tcards.forEach((c,j)=>c.classList.toggle('on', j===i)); tdots.forEach((d,j)=>d.classList.toggle('on', j===i)); ti=i; }
+tdots.forEach((d,i)=>d.addEventListener('click', ()=>showT(i)));
+setInterval(()=>showT((ti+1)%tcards.length), 5500);
+
+document.querySelectorAll('.qa button').forEach(btn => btn.addEventListener('click', () => {
+  const qa = btn.parentElement, ans = qa.querySelector('.ans'), open = qa.classList.contains('open');
+  document.querySelectorAll('.qa').forEach(o => { o.classList.remove('open'); o.querySelector('.ans').style.maxHeight = null; });
+  if (!open){ qa.classList.add('open'); ans.style.maxHeight = ans.scrollHeight + 'px'; }
+}));
+
+const form = document.getElementById('contactForm');
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  let ok = true;
+  const setErr = (id, bad) => { document.getElementById(id).closest('.field').classList.toggle('invalid', bad); if(bad) ok=false; };
+  const v = id => document.getElementById(id).value.trim();
+  setErr('name', v('name').length < 2);
+  setErr('email', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('email')));
+  setErr('phone', v('phone').replace(/\D/g,'').length < 7);
+  setErr('service', v('service') === '');
+  setErr('message', v('message').length < 5);
+  if (ok){ const ok2=document.getElementById('formOk'); ok2.classList.remove('show'); void ok2.offsetWidth; ok2.classList.add('show'); form.querySelectorAll('input,select,textarea').forEach(f => f.value=''); }
+});
+form.querySelectorAll('input,select,textarea').forEach(f => f.addEventListener('input', () => f.closest('.field').classList.remove('invalid')));
+
+const chatFab=document.getElementById('chatFab'),chatPanel=document.getElementById('chatPanel'),chatClose=document.getElementById('chatClose'),chatBody=document.getElementById('chatBody'),chatInput=document.getElementById('chatInput'),chatSend=document.getElementById('chatSend');
+chatFab.addEventListener('click',()=>chatPanel.classList.toggle('open'));
+chatClose.addEventListener('click',()=>chatPanel.classList.remove('open'));
+const replies={pricing:"Our plans start at ₹14,999 (Starter), ₹39,999 (Business), and ₹89,999+ (Premium). Every project gets a free custom quote — want me to point you to the form?",time:"Most websites go live in 7–14 days. E-commerce and apps take 3–6 weeks. We'll confirm an exact timeline in your free quote.",services:"We do Website Development, UI/UX & Logo Design, E-commerce, Mobile Apps, SEO & Marketing, and AI Automation. Which one fits your project?",contact:"Call or WhatsApp us at +91 70737 01158, or email webro284@gmail.com. We reply within one business day!"};
+function addMsg(t,w){const m=document.createElement('div');m.className='msg '+w;m.textContent=t;chatBody.appendChild(m);chatBody.scrollTop=chatBody.scrollHeight;}
+function botReply(t){setTimeout(()=>addMsg(t,'bot'),450);}
+function handle(input){const t=input.toLowerCase();if(replies[t])return botReply(replies[t]);if(/price|cost|quote|plan|budget/.test(t))return botReply(replies.pricing);if(/time|long|days|deadline|fast/.test(t))return botReply(replies.time);if(/service|website|app|seo|design|ecom|store/.test(t))return botReply(replies.services);if(/contact|call|email|phone|reach|whatsapp|number/.test(t))return botReply(replies.contact);if(/hi|hello|hey/.test(t))return botReply("Hey there! 👋 Ask me about our services, pricing, or timelines — or tap a quick option below.");return botReply("Great question! For specifics, drop your details in the contact form and the team will reply within a day. Meanwhile, I can help with pricing, timelines, or services 🙂");}
+document.querySelectorAll('.chat-quick button').forEach(b=>b.addEventListener('click',()=>{addMsg(b.textContent.trim(),'user');handle(b.dataset.q);}));
+function send(){const val=chatInput.value.trim();if(!val)return;addMsg(val,'user');chatInput.value='';handle(val);}
+chatSend.addEventListener('click',send);
+chatInput.addEventListener('keydown',e=>{if(e.key==='Enter')send();});
+
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (!reduce && window.matchMedia('(min-width:981px)').matches){
+  document.querySelectorAll('.tilt').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left)/r.width - .5, py = (e.clientY - r.top)/r.height - .5;
+      card.style.transform = `perspective(900px) rotateY(${px*4.5}deg) rotateX(${-py*4.5}deg) translateY(-4px)`;
+    });
+    card.addEventListener('mouseleave', () => card.style.transform = '');
+  });
+}
+
+/* ===== 3D HERO (Three.js) — lime/olive crystals ===== */
+(function(){
+  if (typeof THREE === 'undefined') return;
+  const canvas = document.getElementById('three');
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha:true, antialias:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  const scene = new THREE.Scene();
+  const hero = canvas.parentElement;
+  let W = hero.clientWidth, H = hero.clientHeight;
+  const camera = new THREE.PerspectiveCamera(55, W/H, 0.1, 100);
+  camera.position.z = 9; renderer.setSize(W, H);
+  scene.add(new THREE.AmbientLight(0xcdd9a8, 0.9));
+  const p1 = new THREE.PointLight(0xbfe06b, 1.1, 60); p1.position.set(6,6,8); scene.add(p1);
+  const p2 = new THREE.PointLight(0x9cbb63, 0.9, 60); p2.position.set(-7,-4,6); scene.add(p2);
+  const group = new THREE.Group(); scene.add(group);
+  const defs = [{p:[-5.4,2.2,-2],s:1.05},{p:[5.6,1.6,-1],s:1.3},{p:[4.8,-2.6,-2],s:0.9},{p:[-5.0,-2.2,-1],s:0.8},{p:[0.2,3.3,-4],s:0.65}];
+  const crystals = [];
+  defs.forEach(d => {
+    const geo = new THREE.IcosahedronGeometry(d.s, 0);
+    const mat = new THREE.MeshStandardMaterial({ color:0x8aa35c, emissive:0x303d1d, metalness:.15, roughness:.6, flatShading:true, transparent:true, opacity:.5 });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.add(new THREE.LineSegments(new THREE.WireframeGeometry(geo), new THREE.LineBasicMaterial({ color:0x9cbb63, transparent:true, opacity:.28 })));
+    mesh.position.set(...d.p);
+    mesh.userData = { rx:(Math.random()-.5)*.003+.0014, ry:(Math.random()-.5)*.003+.0018, fo:Math.random()*Math.PI*2, fa:0.14+Math.random()*0.18, baseY:d.p[1] };
+    group.add(mesh); crystals.push(mesh);
+  });
+  const pcount = 320, pg = new THREE.BufferGeometry(), pos = new Float32Array(pcount*3);
+  for (let i=0;i<pcount*3;i++) pos[i] = (Math.random()-.5)*26;
+  pg.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  const stars = new THREE.Points(pg, new THREE.PointsMaterial({ color:0x86a35a, size:0.045, transparent:true, opacity:.3 }));
+  scene.add(stars);
+  let mx=0,my=0,tx=0,ty=0;
+  window.addEventListener('mousemove', e => { mx=(e.clientX/window.innerWidth-.5); my=(e.clientY/window.innerHeight-.5); });
+  let t=0;
+  function animate(){
+    t += 0.01;
+    crystals.forEach(m => { m.rotation.x += m.userData.rx; m.rotation.y += m.userData.ry; m.position.y = m.userData.baseY + Math.sin(t + m.userData.fo)*m.userData.fa; });
+    stars.rotation.y += 0.0006;
+    tx += (mx - tx)*0.05; ty += (my - ty)*0.05;
+    group.rotation.y = tx*0.5; group.rotation.x = ty*0.4;
+    camera.position.x = tx*1.4; camera.position.y = -ty*1.0; camera.lookAt(0,0,0);
+    renderer.render(scene, camera);
+    if (!reduce) requestAnimationFrame(animate);
+  }
+  function resize(){ W=hero.clientWidth; H=hero.clientHeight; camera.aspect=W/H; camera.updateProjectionMatrix(); renderer.setSize(W,H); }
+  window.addEventListener('resize', resize);
+  if (reduce){ renderer.render(scene,camera); } else { animate(); }
+})();
+</script>
+</body>
+</html>
