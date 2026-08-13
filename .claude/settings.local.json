@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 *)",
+      "Bash(curl -sIL http://webro.studio -w \"FINAL_URL:%{url_effective} CODE:%{http_code}\\\\n\")",
+      "Bash(curl -sIL https://www.webro.studio -w \"FINAL_URL:%{url_effective} CODE:%{http_code}\\\\n\")",
+      "Bash(curl -sI https://webro.studio)",
+      "Bash(curl -sL -o /dev/null -w \"%{http_code} -> %{url_effective}\\\\n\" http://webro.studio)",
+      "Bash(curl -s -o /dev/null -D - http://webro.studio)",
+      "Bash(curl -s -o /dev/null -D - https://www.webro.studio)"
+    ]
+  }
+}
