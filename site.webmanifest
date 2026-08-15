@@ -1,0 +1,13 @@
+{
+  "name": "WEBRO Studio",
+  "short_name": "WEBRO",
+  "description": "Websites, apps, e-commerce and AI automation for businesses worldwide.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F1EBDD",
+  "theme_color": "#F1EBDD",
+  "icons": [
+    { "src": "/assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
