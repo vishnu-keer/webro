@@ -27,9 +27,29 @@ if (!KEY) return;                                   // page opted out (FAQ, lega
 const canvas = document.getElementById('bgfx');
 if (!canvas) return;
 
+/* Add ?debug=1 to any page URL to see exactly what the 3D layer is doing.
+   Built in because mobile failures are otherwise invisible — no console. */
+const DEBUG = location.search.indexOf('debug=1') !== -1;
+function log(msg){
+  console.log('[bg3d] ' + msg);
+  if (!DEBUG) return;
+  let box = document.getElementById('bg3d-debug');
+  if (!box){
+    box = document.createElement('div');
+    box.id = 'bg3d-debug';
+    box.style.cssText = 'position:fixed;left:8px;top:8px;z-index:9999;background:#12301b;' +
+      'color:#c2d98a;font:11px ui-monospace,monospace;padding:8px 10px;border-radius:8px;' +
+      'max-width:80vw;white-space:pre-line;line-height:1.5';
+    document.body.appendChild(box);
+  }
+  box.textContent += msg + '\n';
+}
+
+/* Only reduced-motion opts out now. Data-saver used to skip 3D entirely, which
+   silently disabled it on plenty of mobile connections — instead we just run
+   the lighter phone tier. */
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const saveData     = navigator.connection && navigator.connection.saveData;
-if (reduceMotion || saveData) { canvas.style.display = 'none'; return; }
+if (reduceMotion) { canvas.style.display = 'none'; log('skipped: reduced motion'); return; }
 
 /* ---------- device tiers ----------
    Phones still get the animation, just fewer objects and a lower pixel
@@ -250,7 +270,7 @@ function init(){
     renderer = new THREE.WebGLRenderer({ canvas, alpha:true, antialias: TIER !== 'phone' });
     renderer.setPixelRatio(Math.min(devicePixelRatio || 1, Q.ratio));
   } catch (err) {
-    console.warn('[bg3d] WebGL unavailable, keeping CSS background:', err);
+    log('WebGL unavailable: ' + err.message);
     canvas.style.display = 'none';
     return;
   }
@@ -262,10 +282,13 @@ function init(){
   const l2 = new THREE.PointLight(0xd8c48a, .75, 80); l2.position.set(-8,-4,7); scene.add(l2);
 
   const build = SCENES[KEY];
-  if (!build){ canvas.style.display = 'none'; return; }
+  if (!build){ log('no scene named ' + KEY); canvas.style.display = 'none'; return; }
   sceneApi = build();
 
   resize();
+  let drawable = 0;
+  scene.traverse(o => { if (o.isMesh || o.isLine || o.isPoints || o.isLineSegments) drawable++; });
+  log('rendering ' + drawable + ' objects at ' + canvas.width + 'x' + canvas.height);
   addEventListener('resize', resize, { passive:true });
 
   // Pointer parallax on desktop only — on touch it would fight scrolling.
@@ -282,17 +305,38 @@ function init(){
   start();
 }
 
-/* Load Three.js only after first paint — the page is fully usable without it. */
-function boot(){
+/* Load Three.js after first paint. Two CDNs: if one is blocked or slow on a
+   mobile network the second is tried before giving up. */
+const CDNS = [
+  'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
+  'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js'
+];
+
+function loadFrom(i){
+  if (i >= CDNS.length){
+    log('all CDNs failed — keeping CSS background');
+    canvas.style.display = 'none';
+    return;
+  }
+  log('loading three.js (' + (i + 1) + '/' + CDNS.length + ')');
   const s = document.createElement('script');
-  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+  s.src = CDNS[i];
   s.async = true;
-  s.onload = () => { THREE = window.THREE; if (THREE) init(); };
-  s.onerror = () => { console.warn('[bg3d] Three.js failed to load; CSS background retained'); canvas.style.display = 'none'; };
+  s.onload = () => {
+    THREE = window.THREE;
+    if (THREE) { log('three.js r' + THREE.REVISION + ' loaded'); init(); }
+    else loadFrom(i + 1);
+  };
+  s.onerror = () => { log('CDN ' + (i + 1) + ' failed'); loadFrom(i + 1); };
   document.head.appendChild(s);
 }
 
-if ('requestIdleCallback' in window) requestIdleCallback(boot, { timeout: 2200 });
-else setTimeout(boot, 900);
+function boot(){
+  log('scene=' + KEY + ' tier=' + TIER + ' ' + innerWidth + 'x' + innerHeight);
+  loadFrom(0);
+}
+
+if ('requestIdleCallback' in window) requestIdleCallback(boot, { timeout: 2000 });
+else setTimeout(boot, 700);
 
 })();

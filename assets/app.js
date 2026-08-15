@@ -48,11 +48,34 @@ if (burger && mobileMenu) {
   });
 }
 
-/* ---------- Scroll reveal ---------- */
-const io = new IntersectionObserver(es => es.forEach(en => {
-  if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
-}), { threshold: .12, rootMargin: '0px 0px -40px 0px' });
-$$('.reveal').forEach(el => io.observe(el));
+/* ---------- Scroll reveal ----------
+   Content starts at opacity:0 and is revealed on scroll. That is fine until
+   IntersectionObserver misbehaves — some in-app browsers (WhatsApp, Instagram,
+   Chrome Custom Tabs) throttle or never fire it, which leaves whole sections
+   permanently blank. Every path below ends with the content visible. */
+function revealAll() { $$('.reveal').forEach(el => el.classList.add('in')); }
+
+if (!('IntersectionObserver' in window)) {
+  revealAll();                                   // no support at all
+} else {
+  const io = new IntersectionObserver(es => es.forEach(en => {
+    if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+  }), { threshold: 0, rootMargin: '0px 0px 15% 0px' });   // fire earlier, not later
+
+  $$('.reveal').forEach(el => io.observe(el));
+
+  // Safety net: anything still hidden after 2.5s gets shown regardless.
+  // A visitor seeing blank space is far worse than skipping an animation.
+  setTimeout(() => {
+    $$('.reveal:not(.in)').forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (r.top < innerHeight * 1.5) el.classList.add('in');
+    });
+  }, 2500);
+
+  // Final guarantee — after 6s nothing on the page is invisible.
+  setTimeout(revealAll, 6000);
+}
 
 /* ---------- Cursor glow on cards ---------- */
 document.addEventListener('pointermove', e => {
