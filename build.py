@@ -652,6 +652,12 @@ def main():
         f"User-agent: *\nAllow: /\n\nSitemap: {SITE}/sitemap.xml\n", encoding="utf-8")
     print("  built robots.txt")
 
+    # Tells GitHub Pages to serve these files as-is instead of running them
+    # through Jekyll. This site needs no build step, and Jekyll would otherwise
+    # try to parse unrelated files in the repo and can fail the deployment.
+    (ROOT / ".nojekyll").touch()
+    print("  built .nojekyll")
+
 
 if __name__ == "__main__":
     print("Building WEBRO site…")
