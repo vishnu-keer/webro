@@ -253,3 +253,9 @@
 
   p { color: palette('ink-soft'); font-size: 1.06rem; max-width: 40rem; margin-top: space('sm'); }
 }
+
+// Set by an inline head script when the splash has already been seen this
+// session, so a returning visitor never sees it flash before JS removes it.
+.splash-seen .loader {
+  display: none;
+}

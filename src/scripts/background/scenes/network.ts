@@ -23,7 +23,7 @@ export const network: SceneFactory = ({ THREE, scene, camera, quality }) => {
   const nodes = Array.from({ length: count }, () => {
     const mesh = new THREE.Mesh(
       new THREE.SphereGeometry(0.085, 8, 8),
-      materials.solid(palette.deep, 0.7, false),
+      materials.solid(palette.deep, 0.8, false),
     );
     group.add(mesh);
     return {
@@ -45,7 +45,7 @@ export const network: SceneFactory = ({ THREE, scene, camera, quality }) => {
   const geometry = new THREE.BufferGeometry();
   const vertices = new Float32Array(count * count * 6);
   geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-  group.add(new THREE.LineSegments(geometry, materials.line(palette.lime, 0.22)));
+  group.add(new THREE.LineSegments(geometry, materials.line(palette.lime, 0.24)));
 
   const axes = ['x', 'y', 'z'] as const;
 

@@ -15,18 +15,35 @@ import { initBackground } from './background/renderer';
 /**
  * Client entry point.
  *
- * Every initialiser is a no-op when its markup is absent, so a single bundle
- * serves every page without per-page conditionals.
+ * With view transitions enabled, Astro swaps the document body on every
+ * navigation. That splits initialisation in two:
+ *
+ *   • Global — document-level delegated listeners. These survive the swap, so
+ *     running them twice would double-fire every handler. Guarded by a flag.
+ *   • Per page — anything bound to elements inside <body>, which are destroyed
+ *     and recreated. These must run again after each navigation.
+ *
+ * Every initialiser is a no-op when its markup is absent, so one bundle serves
+ * every page without per-page conditionals.
  */
-function bootstrap(): void {
+
+let globalsReady = false;
+
+function initGlobals(): void {
+  if (globalsReady) return;
+  globalsReady = true;
+
+  initAnalytics(); // document click delegation
+  initPointerGlow(); // document pointermove delegation
+}
+
+function initPage(): void {
   initLoader();
   initNavigation();
   initReveal();
-  initPointerGlow();
-  initAccordion();
   initTypewriter();
-  initAnalytics();
   initChatWidget();
+  initAccordion(); // binds to each trigger element, so must re-run per page
 
   initContactForm({
     web3formsKey: site.web3formsKey,
@@ -38,8 +55,11 @@ function bootstrap(): void {
   if (sceneName) void initBackground(sceneName);
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', bootstrap);
-} else {
-  bootstrap();
-}
+/**
+ * `astro:page-load` fires on the initial load *and* after every view
+ * transition, so it is the only hook needed for per-page setup.
+ */
+document.addEventListener('astro:page-load', () => {
+  initGlobals();
+  initPage();
+});

@@ -1,4 +1,5 @@
 import type { NavLink } from '@/types';
+import { hasCaseStudies } from './work';
 
 /**
  * Single source of truth for business details.
@@ -46,9 +47,17 @@ export const site = {
   web3formsKey: '',
 } as const;
 
+/**
+ * Primary navigation.
+ *
+ * Work is inserted automatically once `src/data/work.ts` has entries — an
+ * empty portfolio link is worse than no link, so it stays hidden until there
+ * is something real behind it.
+ */
 export const navLinks: readonly NavLink[] = [
   { href: '/', label: 'Home' },
   { href: '/services', label: 'Services' },
+  ...(hasCaseStudies ? [{ href: '/work', label: 'Work' }] : []),
   { href: '/pricing', label: 'Pricing' },
   { href: '/about', label: 'About' },
   { href: '/faq', label: 'FAQ' },

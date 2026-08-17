@@ -20,7 +20,19 @@ const TIME_STEP = 0.01;
  * ordinary mobile data, which silently disabled the animation for a large
  * share of real visitors. We now drop to the phone quality tier instead.
  */
+/**
+ * Teardown for the currently running scene.
+ *
+ * View transitions call `initBackground` again on every navigation. Without
+ * disposing first, each navigation would leak a WebGL context — browsers cap
+ * these at roughly 8–16, after which every canvas on the page stops rendering.
+ */
+let disposeActive: (() => void) | null = null;
+
 export async function initBackground(sceneName: BackgroundScene): Promise<void> {
+  disposeActive?.();
+  disposeActive = null;
+
   const canvas = document.querySelector<HTMLCanvasElement>('[data-scene-canvas]');
   if (!canvas) return;
 
@@ -138,10 +150,29 @@ async function start(
   };
 
   // Do not burn battery in a background tab.
-  document.addEventListener('visibilitychange', () => {
+  const onVisibility = (): void => {
     stop();
     if (!document.hidden) render();
-  });
+  };
+  document.addEventListener('visibilitychange', onVisibility);
+
+  // Register teardown so the next navigation can release this context.
+  disposeActive = () => {
+    stop();
+    window.removeEventListener('resize', resize);
+    document.removeEventListener('visibilitychange', onVisibility);
+
+    scene.traverse((object) => {
+      const mesh = object as Partial<THREE.Mesh>;
+      mesh.geometry?.dispose();
+      const material = mesh.material;
+      if (Array.isArray(material)) material.forEach((m) => m.dispose());
+      else material?.dispose();
+    });
+
+    renderer.dispose();
+    renderer.forceContextLoss();
+  };
 
   render();
 }

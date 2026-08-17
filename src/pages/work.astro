@@ -1,0 +1,109 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import SectionHeader from '@components/ui/SectionHeader.astro';
+import { caseStudies } from '@/data/work';
+import { site } from '@/data/site';
+
+/** Each project is also emitted as structured data so it can surface in search. */
+const workSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'WEBRO Studio — Client Work',
+  itemListElement: caseStudies.map((study, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    item: {
+      '@type': 'CreativeWork',
+      name: study.client,
+      description: study.summary,
+      url: study.url,
+      dateCreated: String(study.year),
+      creator: { '@id': `${site.url}/#organization` },
+    },
+  })),
+};
+---
+
+<BaseLayout
+  title="Our Work | Client Projects & Results — WEBRO"
+  description="Real websites delivered by WEBRO Studio for businesses in Jaipur and beyond — salons, cafés and local brands, each built to bring in bookings."
+  keywords="web design portfolio jaipur, website case studies, salon website design, cafe website design, agency work india"
+  background="network"
+>
+  <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(workSchema)} />
+
+  <div class="container">
+    <div class="page-head">
+      <SectionHeader
+        level={1}
+        eyebrow="Selected work"
+        title="Sites that bring customers through the door"
+        description="Real businesses, real live sites. Click through and judge them yourself — every link below is a site we built and still runs."
+      />
+    </div>
+
+    <section class="section" style="padding-block-start:0">
+      <div class="grid grid--2">
+        {
+          caseStudies.map((study) => (
+            <article class="card reveal work-card">
+              {study.image ? (
+                <img
+                  class="work-card__image"
+                  src={study.image}
+                  alt={`${study.client} website designed by WEBRO Studio`}
+                  width="1600"
+                  height="1000"
+                  loading="lazy"
+                />
+              ) : (
+                <div class="work-card__placeholder" aria-hidden="true">
+                  <span>{study.client.charAt(0)}</span>
+                </div>
+              )}
+
+              <p class="work-card__meta">
+                {study.industry} · {study.year}
+              </p>
+              <h2 class="card__title">{study.client}</h2>
+              <p class="card__body">{study.summary}</p>
+
+              {study.result && <p class="work-card__result">{study.result}</p>}
+
+              <ul class="work-card__highlights">
+                {study.highlights.map((highlight) => (
+                  <li>{highlight}</li>
+                ))}
+              </ul>
+
+              <ul class="work-card__services">
+                {study.services.map((service) => (
+                  <li>{service}</li>
+                ))}
+              </ul>
+
+              {study.url && (
+                <a class="btn btn--ghost" href={study.url} target="_blank" rel="noopener">
+                  Visit live site →
+                </a>
+              )}
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="panel reveal" style="margin-top:1.75rem">
+        <h2>Want results like these for your business?</h2>
+        <p class="lead" style="margin:0.75rem auto 1.5rem">
+          Tell us what you need. We reply within one business day with honest scope and pricing.
+        </p>
+        <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap">
+          <a class="btn btn--primary" href="/contact">Start your project</a>
+          <a class="btn btn--ghost" href={site.whatsapp} target="_blank" rel="noopener">
+            WhatsApp us
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

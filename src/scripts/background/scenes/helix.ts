@@ -16,7 +16,7 @@ export const helix: SceneFactory = ({ THREE, scene, camera, quality }) => {
   group.rotation.z = 0.34;
   scene.add(group);
 
-  const count = scaleCount(54, quality, 20);
+  const count = scaleCount(36, quality, 16);
   const strandA: THREE.Mesh[] = [];
   const strandB: THREE.Mesh[] = [];
   const rungs: { mesh: THREE.Mesh; index: number }[] = [];
@@ -24,11 +24,11 @@ export const helix: SceneFactory = ({ THREE, scene, camera, quality }) => {
   for (let i = 0; i < count; i += 1) {
     const a = new THREE.Mesh(
       new THREE.SphereGeometry(0.14, 8, 8),
-      materials.solid(palette.deep, 0.72, false),
+      materials.solid(palette.deep, 0.85, false),
     );
     const b = new THREE.Mesh(
       new THREE.SphereGeometry(0.14, 8, 8),
-      materials.solid(palette.gold, 0.72, false),
+      materials.solid(palette.gold, 0.85, false),
     );
     group.add(a, b);
     strandA.push(a);
@@ -39,7 +39,7 @@ export const helix: SceneFactory = ({ THREE, scene, camera, quality }) => {
     if (i % 3 === 0) {
       const mesh = new THREE.Mesh(
         new THREE.CylinderGeometry(0.028, 0.028, 1, 5),
-        materials.solid(palette.sage, 0.32, false),
+        materials.solid(palette.sage, 0.4, false),
       );
       group.add(mesh);
       rungs.push({ mesh, index: i });

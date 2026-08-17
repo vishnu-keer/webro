@@ -18,7 +18,7 @@ export const columns: SceneFactory = ({ THREE, scene, camera, quality }) => {
   const bars = Array.from({ length: count }, (_, index) => {
     const mesh = new THREE.Mesh(
       new THREE.BoxGeometry(0.5, 4, 0.5),
-      materials.solid(index % 5 === 0 ? palette.gold : palette.sage, 0.42),
+      materials.solid(index % 5 === 0 ? palette.gold : palette.sage, 0.5),
     );
     mesh.position.set((index - count / 2) * spacing, 0, Math.sin(index * 0.8) * 2.2);
     group.add(mesh);

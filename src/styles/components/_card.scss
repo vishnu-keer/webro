@@ -91,3 +91,93 @@
   strong { display: block; font-family: $font-display; margin-bottom: 0.375rem; }
   span { font-size: 0.88rem; color: palette('ink-soft'); }
 }
+
+.work-card {
+  &__image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-radius: $radius-sm;
+    margin-bottom: space('md');
+  }
+
+  &__meta {
+    font-family: $font-display;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: palette('lime-deep');
+    margin-bottom: 0.375rem;
+  }
+
+  &__result {
+    margin-top: space('sm');
+    padding: 0.625rem 0.875rem;
+    border-radius: $radius-sm;
+    background: rgba(194, 217, 138, 0.28);
+    font-family: $font-display;
+    font-weight: 600;
+    font-size: 0.94rem;
+    color: palette('lime-deep');
+  }
+
+  &__services {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: space('sm') 0 space('md');
+
+    li {
+      padding: 0.25rem 0.625rem;
+      border: 1px solid $hairline;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      color: palette('ink-soft');
+    }
+  }
+}
+
+// Shown until a real screenshot is added, so a missing image never renders
+// as a broken file on a portfolio page.
+.work-card__placeholder {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 10;
+  margin-bottom: space('md');
+  border-radius: $radius-sm;
+  background: linear-gradient(135deg, #12301b, #3d6b23);
+
+  span {
+    font-family: $font-display;
+    font-weight: 700;
+    font-size: 3.5rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+.work-card__highlights {
+  list-style: none;
+  display: grid;
+  gap: 0.5rem;
+  margin: space('md') 0;
+
+  li {
+    position: relative;
+    padding-left: 1.1rem;
+    font-size: 0.88rem;
+    color: palette('ink-soft');
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.55em;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: palette('lime-mid');
+    }
+  }
+}

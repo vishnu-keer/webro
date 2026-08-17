@@ -27,7 +27,7 @@ export const globe: SceneFactory = ({ THREE, scene, camera, quality }) => {
     ),
     new THREE.Mesh(
       new THREE.SphereGeometry(RADIUS * 0.99, 24, 18),
-      materials.solid(palette.sage, 0.07, false),
+      materials.solid(palette.sage, 0.09, false),
     ),
   );
 
@@ -42,7 +42,7 @@ export const globe: SceneFactory = ({ THREE, scene, camera, quality }) => {
   const origin = toVector(JAIPUR[0], JAIPUR[1]);
   const hub = new THREE.Mesh(
     new THREE.SphereGeometry(0.13, 10, 10),
-    materials.solid(palette.gold, 0.9, false),
+    materials.solid(palette.gold, 1, false),
   );
   hub.position.copy(origin);
   group.add(hub);
@@ -58,19 +58,19 @@ export const globe: SceneFactory = ({ THREE, scene, camera, quality }) => {
     group.add(
       new THREE.Line(
         new THREE.BufferGeometry().setFromPoints(curve.getPoints(36)),
-        materials.line(palette.gold, 0.36),
+        materials.line(palette.gold, 0.42),
       ),
     );
 
     const city = new THREE.Mesh(
       new THREE.SphereGeometry(0.09, 8, 8),
-      materials.solid(palette.deep, 0.8, false),
+      materials.solid(palette.deep, 0.9, false),
     );
     city.position.copy(end);
 
     const traveller = new THREE.Mesh(
       new THREE.SphereGeometry(0.085, 8, 8),
-      materials.solid(palette.gold, 0.9, false),
+      materials.solid(palette.gold, 1, false),
     );
     group.add(city, traveller);
 

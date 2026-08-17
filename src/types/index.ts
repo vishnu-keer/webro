@@ -83,3 +83,27 @@ export interface KnowledgeEntry {
   readonly keywords: readonly string[];
   readonly answer: string;
 }
+
+export interface CaseStudy {
+  readonly slug: string;
+  readonly client: string;
+  readonly industry: string;
+  readonly summary: string;
+  /**
+   * The measurable outcome — the field that actually sells the work.
+   * Optional so a project can go live while the numbers are still being
+   * gathered; never fill it with a guess.
+   */
+  readonly result?: string;
+  /** What the client bought, in their words where possible. */
+  readonly highlights: readonly string[];
+  readonly services: readonly string[];
+  /**
+   * Screenshot at /public/assets/work/<slug>.jpg (1600×1000).
+   * Falls back to a branded panel when absent.
+   */
+  readonly image?: string;
+  /** Live site, if it is still online. */
+  readonly url?: string;
+  readonly year: number;
+}

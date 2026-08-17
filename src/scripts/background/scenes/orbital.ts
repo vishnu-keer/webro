@@ -21,14 +21,14 @@ export const orbital: SceneFactory = ({ THREE, scene, camera, quality }) => {
   );
   const core = new THREE.Mesh(
     new THREE.IcosahedronGeometry(3.05, 1),
-    materials.solid(palette.sage, 0.08, false),
+    materials.solid(palette.sage, 0.1, false),
   );
   group.add(globe, core);
 
   const nodes = Array.from({ length: scaleCount(26, quality, 10) }, () => {
     const mesh = new THREE.Mesh(
       new THREE.SphereGeometry(0.075, 8, 8),
-      materials.solid(palette.deep, 0.7, false),
+      materials.solid(palette.deep, 0.85, false),
     );
     group.add(mesh);
     return {

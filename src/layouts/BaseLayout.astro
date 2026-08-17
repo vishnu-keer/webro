@@ -1,4 +1,5 @@
 ---
+import { ViewTransitions } from 'astro:transitions';
 import type { SeoProps } from '@/types';
 import { site } from '@/data/site';
 import { services } from '@/data/services';
@@ -8,6 +9,15 @@ import Loader from '@components/layout/Loader.astro';
 import Backdrop from '@components/background/Backdrop.astro';
 import QuickActions from '@components/layout/QuickActions.astro';
 import ChatWidget from '@components/chat/ChatWidget.astro';
+
+/**
+ * Fonts are self-hosted rather than loaded from Google Fonts. The external
+ * stylesheet was render-blocking on a third-party origin — two extra DNS +
+ * TLS round trips before any text could paint, which is a direct LCP cost.
+ * Bundling them keeps everything on one connection.
+ */
+import '@fontsource-variable/space-grotesk';
+import '@fontsource-variable/dm-sans';
 
 import '@styles/main.scss';
 
@@ -99,12 +109,24 @@ const organisationSchema = {
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap"
-    />
+    {/* The logo is the largest element above the fold on every page. */}
+    <link rel="preload" as="image" href="/assets/logo.png" />
+
+    {/* Runs before first paint so a returning visitor never sees the splash
+        flash for a frame before JavaScript removes it. */}
+    <script is:inline>
+      try {
+        if (sessionStorage.getItem('webro:splash-seen') === '1') {
+          document.documentElement.classList.add('splash-seen');
+        }
+      } catch {
+        /* private browsing — fall through and show the splash */
+      }
+    </script>
+
+    {/* Instant, seamless navigation while keeping one real URL per page —
+        so each can still be indexed and ranked independently. */}
+    <ViewTransitions />
 
     <script is:inline type="application/ld+json" set:html={JSON.stringify(organisationSchema)} />
     <slot name="head" />
