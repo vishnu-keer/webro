@@ -21,3 +21,10 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 .idea/
+
+# Local AI tooling — machine-specific, not part of the site
+.claude/
+
+# Python artefacts (from tooling that may run alongside the project)
+__pycache__/
+*.pyc
