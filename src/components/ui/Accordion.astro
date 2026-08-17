@@ -1,0 +1,33 @@
+---
+import type { Faq } from '@/types';
+
+interface Props {
+  readonly items: readonly Faq[];
+}
+
+const { items } = Astro.props;
+---
+
+<div class="accordion">
+  {
+    items.map((item, index) => (
+      <div class="accordion__item reveal" data-accordion-item data-open="false">
+        <button
+          class="accordion__trigger"
+          type="button"
+          data-accordion-trigger
+          aria-expanded="false"
+          aria-controls={`faq-panel-${index}`}
+        >
+          <span>{item.question}</span>
+          <svg class="accordion__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </button>
+        <div class="accordion__panel" id={`faq-panel-${index}`} data-accordion-panel>
+          <p>{item.answer}</p>
+        </div>
+      </div>
+    ))
+  }
+</div>

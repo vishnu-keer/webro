@@ -1,0 +1,44 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import SectionHeader from '@components/ui/SectionHeader.astro';
+import PlanCard from '@components/ui/PlanCard.astro';
+import { projectPlans, monthlyPlans } from '@/data/pricing';
+---
+
+<BaseLayout
+  title="Pricing in USD | Website, App & Monthly Plans — WEBRO"
+  description="Transparent fixed pricing from $299. Website, e-commerce and app packages plus monthly Instagram management, Menu QR and Review QR plans. No hourly billing."
+  keywords="website design cost, web development pricing, how much does a website cost, app development cost, instagram management pricing, menu qr price, affordable web design agency"
+  background="columns"
+>
+  <div class="container">
+    <div class="page-head">
+      <SectionHeader
+        level={1}
+        eyebrow="Pricing"
+        title="Transparent pricing in USD"
+        description="Fixed quotes agreed before work starts. No hourly billing, no surprise invoices."
+      />
+    </div>
+
+    <section class="section" style="padding-block-start:0">
+      <div class="grid grid--3">
+        {projectPlans.map((plan) => <PlanCard plan={plan} />)}
+      </div>
+      <p style="margin-top:1.125rem;font-size:0.88rem;color:var(--ink-soft, #5b5848)">
+        All prices in USD. Custom platforms and larger builds are quoted after a short scoping call.
+      </p>
+    </section>
+
+    <section class="section" style="padding-block-start:0">
+      <SectionHeader
+        eyebrow="Monthly services"
+        title="Ongoing growth plans"
+        description="Recurring work that compounds — content, reviews and automation that keep working after launch."
+      />
+      <div class="grid grid--3">
+        {monthlyPlans.map((plan) => <PlanCard plan={plan} />)}
+      </div>
+    </section>
+  </div>
+</BaseLayout>

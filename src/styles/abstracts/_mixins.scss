@@ -1,0 +1,62 @@
+@use 'sass:map';
+@use 'variables' as *;
+
+/// Media query helper. Mobile-first: styles apply below the named breakpoint.
+@mixin below($name) {
+  @if not map.has-key($breakpoints, $name) {
+    @error 'Unknown breakpoint "#{$name}".';
+  }
+  @media (max-width: map.get($breakpoints, $name)) {
+    @content;
+  }
+}
+
+@mixin above($name) {
+  @media (min-width: map.get($breakpoints, $name) + 1px) {
+    @content;
+  }
+}
+
+/// Frosted surface used by cards and panels.
+@mixin glass {
+  background: rgba(255, 255, 255, 0.58);
+  backdrop-filter: blur(10px);
+  border: 1px solid $hairline;
+  border-radius: $radius;
+  box-shadow: $shadow;
+}
+
+/// Raised card that lifts on hover.
+@mixin card {
+  background: palette('cream');
+  border: 1px solid $hairline;
+  border-radius: $radius;
+  transition:
+    transform $duration $ease,
+    box-shadow $duration,
+    border-color $duration;
+}
+
+/// Fades a marquee out at both edges.
+@mixin edge-fade($start: 8%, $end: 92%) {
+  mask-image: linear-gradient(90deg, transparent, #000 $start, #000 $end, transparent);
+}
+
+/// Respects the user's motion preference.
+@mixin motion-safe {
+  @media (prefers-reduced-motion: no-preference) {
+    @content;
+  }
+}
+
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

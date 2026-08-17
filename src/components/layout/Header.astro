@@ -1,0 +1,49 @@
+---
+import { navLinks } from '@/data/site';
+import Brand from './Brand.astro';
+
+/** Trailing slashes are ignored by config, so normalise before comparing. */
+const current = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isCurrent = (href: string): boolean => (href === '/' ? current === '/' : current === href);
+---
+
+<div class="topbar">
+  Now booking projects worldwide — <a href="/contact">get a free quote</a>
+</div>
+
+<header class="header" data-header>
+  <div class="container">
+    <div class="header__inner">
+      <Brand />
+
+      <nav class="nav" aria-label="Primary">
+        {
+          navLinks.map((link) => (
+            <a href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined}>
+              {link.label}
+            </a>
+          ))
+        }
+      </nav>
+
+      <div class="header__actions">
+        <a class="btn btn--primary" href="/contact">Get a quote</a>
+        <button
+          class="nav-toggle"
+          type="button"
+          data-nav-toggle
+          aria-label="Toggle navigation"
+          aria-expanded="false"
+          aria-controls="mobile-nav"
+        >
+          <span></span>
+        </button>
+      </div>
+    </div>
+
+    <nav class="mobile-nav" id="mobile-nav" data-mobile-nav aria-label="Mobile">
+      {navLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+      <a class="btn btn--primary" style="margin-top:0.75rem" href="/contact">Get a free quote</a>
+    </nav>
+  </div>
+</header>

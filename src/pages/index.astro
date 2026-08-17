@@ -1,0 +1,95 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import SectionHeader from '@components/ui/SectionHeader.astro';
+import ServiceCard from '@components/ui/ServiceCard.astro';
+import TechMarquee from '@components/ui/TechMarquee.astro';
+import Icon from '@components/ui/Icon.astro';
+import { site } from '@/data/site';
+import { services, trustSignals } from '@/data/services';
+
+const featured = services.slice(0, 6);
+---
+
+<BaseLayout
+  title="WEBRO | Web Design, App & AI Development Agency"
+  description={site.description}
+  keywords="web development company, website design agency, mobile app development, AI automation agency, digital menu QR code, Google review QR code, Instagram management services, e-commerce development, software development company, SEO agency, web design Jaipur, hire web developers India"
+  background="orbital"
+>
+  <div class="container">
+    <section class="hero">
+      <span class="hero__typed" data-typewriter><span class="hero__cursor"></span></span>
+      <h1>Websites, apps and <em>AI automation</em> that grow your business.</h1>
+      <p class="lead">
+        WEBRO builds fast, beautiful digital products for companies worldwide — from marketing sites
+        and e-commerce stores to mobile apps, custom software and AI agents that handle the busywork.
+      </p>
+
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="/contact">Start your project</a>
+        <a class="btn btn--ghost" href="/services">Explore services</a>
+      </div>
+
+      <div class="hero__proof">
+        <span><strong>Fixed</strong> pricing</span>
+        <span><strong>1 day</strong> reply time</span>
+        <span><strong>100%</strong> code ownership</span>
+        <span><strong>Global</strong> delivery</span>
+      </div>
+    </section>
+  </div>
+
+  <section class="section" style="padding-block-start:0">
+    <div class="container"><TechMarquee /></div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHeader
+        eyebrow="What we do"
+        title="Everything your business needs online"
+        description="One team for design, development, automation and growth — so nothing gets lost between vendors."
+      />
+      <div class="grid grid--3">
+        {featured.map((service) => <ServiceCard service={service} />)}
+      </div>
+      <p style="margin-top:1.75rem"><a class="btn btn--ghost" href="/services">See all services</a></p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHeader
+        eyebrow="Why WEBRO"
+        title="What you get, every time"
+        description="No agency theatre. Clear scope, clear price, work you own outright."
+      />
+      <div class="trust reveal">
+        {
+          trustSignals.map((signal) => (
+            <div class="trust__item">
+              <div class="trust__icon"><Icon name={signal.icon} /></div>
+              <strong>{signal.title}</strong>
+              <span>{signal.detail}</span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="panel reveal">
+        <h2>Ready to build something worth showing off?</h2>
+        <p class="lead" style="margin:0.75rem auto 1.75rem">
+          Tell us what you need. We'll reply within one business day with honest scope and pricing.
+        </p>
+        <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap">
+          <a class="btn btn--primary" href="/contact">Get a free quote</a>
+          <a class="btn btn--ghost" href={site.whatsapp} target="_blank" rel="noopener">WhatsApp us</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

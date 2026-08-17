@@ -1,0 +1,4 @@
+// Forwarded into every stylesheet via astro.config.mjs `additionalData`,
+// so partials can use tokens and mixins without importing them each time.
+@forward 'variables';
+@forward 'mixins';

@@ -1,0 +1,66 @@
+@use 'sass:map';
+
+// ---------------------------------------------------------------------------
+// Design tokens
+// Sass variables drive the build; CSS custom properties expose the same values
+// at runtime for anything that needs to change per-component.
+// ---------------------------------------------------------------------------
+
+$colors: (
+  'beige': #f1ebdd,
+  'beige-raised': #fbf7ee,
+  'cream': #fffdf8,
+  'ink': #1c1b14,
+  'ink-soft': #5b5848,
+  'lime': #c2d98a,
+  'lime-mid': #8aab3c,
+  'lime-deep': #4f7016,
+  'gold': #b8934a,
+  'danger': #c0492f,
+);
+
+@function palette($name) {
+  @if not map.has-key($colors, $name) {
+    @error 'Unknown color "#{$name}".';
+  }
+  @return map.get($colors, $name);
+}
+
+// Type scale
+$font-display: 'Space Grotesk', system-ui, sans-serif;
+$font-body: 'DM Sans', system-ui, -apple-system, sans-serif;
+
+// Spacing scale (rem)
+$space: (
+  'xs': 0.5rem,
+  'sm': 0.75rem,
+  'md': 1.125rem,
+  'lg': 1.75rem,
+  'xl': 2.75rem,
+  '2xl': 4rem,
+);
+
+@function space($step) {
+  @return map.get($space, $step);
+}
+
+// Layout
+$max-width: 1180px;
+$radius: 18px;
+$radius-sm: 12px;
+
+// Breakpoints
+$breakpoints: (
+  'sm': 400px,
+  'md': 760px,
+  'lg': 960px,
+);
+
+// Motion
+$ease: cubic-bezier(0.16, 1, 0.3, 1);
+$duration: 0.3s;
+
+// Elevation
+$shadow: 0 14px 40px -18px rgba(40, 50, 15, 0.35);
+$shadow-lg: 0 30px 70px -28px rgba(40, 50, 15, 0.55);
+$hairline: rgba(77, 124, 15, 0.22);

@@ -1,0 +1,143 @@
+---
+import type { SeoProps } from '@/types';
+import { site } from '@/data/site';
+import { services } from '@/data/services';
+import Header from '@components/layout/Header.astro';
+import Footer from '@components/layout/Footer.astro';
+import Loader from '@components/layout/Loader.astro';
+import Backdrop from '@components/background/Backdrop.astro';
+import QuickActions from '@components/layout/QuickActions.astro';
+import ChatWidget from '@components/chat/ChatWidget.astro';
+
+import '@styles/main.scss';
+
+type Props = SeoProps;
+
+const { title, description, keywords, indexable = true, background } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const ogImage = new URL('/assets/og-image.png', site.url).href;
+const robots = indexable ? 'index, follow, max-image-preview:large' : 'noindex, follow';
+
+/** Same English content everywhere; hreflang signals market coverage. */
+const locales = ['en', 'en-in', 'en-us', 'en-gb', 'en-ae'];
+
+const organisationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  '@id': `${site.url}/#organization`,
+  name: site.name,
+  alternateName: site.shortName,
+  description: site.description,
+  url: site.url,
+  logo: new URL('/assets/logo.png', site.url).href,
+  image: ogImage,
+  telephone: site.phone,
+  email: site.email,
+  priceRange: '$$',
+  currenciesAccepted: 'USD, INR',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: site.location.locality,
+    addressRegion: site.location.region,
+    addressCountry: site.location.country,
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: site.location.latitude,
+    longitude: site.location.longitude,
+  },
+  hasMap: site.location.mapsUrl,
+  areaServed: site.markets.map((name) => ({ '@type': 'Country', name })),
+  sameAs: [site.instagram],
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Digital Services',
+    itemListElement: services.map((service) => ({
+      '@type': 'Offer',
+      itemOffered: { '@type': 'Service', name: service.title },
+    })),
+  },
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {keywords && <meta name="keywords" content={keywords} />}
+    <link rel="canonical" href={canonical} />
+    <meta name="robots" content={robots} />
+    <meta name="theme-color" content="#F1EBDD" />
+
+    {locales.map((locale) => <link rel="alternate" hreflang={locale} href={canonical} />)}
+    <link rel="alternate" hreflang="x-default" href={canonical} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={site.shortName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    {/* Google needs at least 48x48 and probes /favicon.ico at the root. */}
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/icon-48.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/icon-96.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap"
+    />
+
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(organisationSchema)} />
+    <slot name="head" />
+
+    {
+      site.gaMeasurementId && (
+        <>
+          <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${site.gaMeasurementId}`} />
+          <script
+            is:inline
+            define:vars={{ id: site.gaMeasurementId }}
+            set:html={`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${site.gaMeasurementId}')`}
+          />
+        </>
+      )
+    }
+  </head>
+
+  <body data-scene={background}>
+    <Loader />
+    <Backdrop />
+
+    <Header />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+
+    <QuickActions />
+    <ChatWidget />
+
+    <script>
+      import '@scripts/main';
+    </script>
+  </body>
+</html>

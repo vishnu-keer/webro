@@ -1,0 +1,47 @@
+@use '../abstracts' as *;
+
+.accordion {
+  max-width: 52rem;
+
+  &__item {
+    @include card;
+    overflow: hidden;
+    margin-bottom: space('sm');
+  }
+
+  &__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: space('md');
+    width: 100%;
+    padding: space('md') space('lg');
+    background: none;
+    border: 0;
+    text-align: left;
+    color: palette('ink');
+    font-family: $font-display;
+    font-weight: 500;
+    font-size: 1.03rem;
+  }
+
+  &__chevron {
+    flex: 0 0 auto;
+    color: palette('lime-deep');
+    transition: transform $duration;
+
+    .accordion__item[data-open='true'] & { transform: rotate(180deg); }
+  }
+
+  &__panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.38s $ease;
+
+    p {
+      padding: 0 space('lg') space('md');
+      color: palette('ink-soft');
+      font-size: 0.94rem;
+    }
+  }
+}

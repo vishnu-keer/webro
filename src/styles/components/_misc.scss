@@ -1,0 +1,255 @@
+@use '../abstracts' as *;
+
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: grid;
+  place-items: center;
+  background: palette('beige');
+  transition: opacity 0.5s, visibility 0.5s;
+
+  &.is-hidden { opacity: 0; visibility: hidden; }
+
+  &__inner { display: flex; flex-direction: column; align-items: center; }
+
+  img { width: 72px; height: 72px; border-radius: 50%; }
+
+  &__word {
+    margin-top: space('sm');
+    font-family: $font-display;
+    font-weight: 700;
+    font-size: 2rem;
+    letter-spacing: 0.16em;
+  }
+
+  &__bar {
+    width: 140px;
+    height: 3px;
+    margin-top: space('sm');
+    border-radius: 3px;
+    background: rgba(77, 124, 15, 0.16);
+    overflow: hidden;
+
+    span {
+      display: block;
+      width: 40%;
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, palette('lime'), palette('lime-mid'));
+      animation: loader-slide 1s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes loader-slide {
+  0% { transform: translateX(-110%); }
+  100% { transform: translateX(320%); }
+}
+
+.marquee {
+  overflow: hidden;
+  @include edge-fade;
+
+  &__track {
+    display: flex;
+    gap: 0.875rem;
+    width: max-content;
+    animation: marquee 38s linear infinite;
+  }
+
+  &:hover &__track { animation-play-state: paused; }
+}
+
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.625rem 1.05rem;
+  border: 1px solid $hairline;
+  border-radius: 999px;
+  background: palette('cream');
+  font-family: $font-display;
+  font-weight: 500;
+  font-size: 0.88rem;
+  white-space: nowrap;
+
+  img { width: 20px; height: 20px; object-fit: contain; }
+}
+
+// Floating call / WhatsApp / Instagram actions.
+.quick-actions {
+  position: fixed;
+  right: space('md');
+  bottom: space('md');
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+
+  @include below('md') { right: space('sm'); bottom: space('sm'); }
+
+  a {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    color: #fff;
+    box-shadow: 0 12px 30px -10px rgba(40, 50, 15, 0.5);
+    transition: transform 0.2s;
+
+    &:hover { transform: scale(1.08); }
+
+    @include below('md') { width: 48px; height: 48px; }
+  }
+
+  &__whatsapp { background: #25d366; }
+  &__instagram { background: linear-gradient(45deg, #f09433, #dc2743, #bc1888); }
+  &__call { background: linear-gradient(135deg, palette('lime-mid'), palette('lime-deep')); }
+}
+
+// Rotating capability rings on the About page.
+.orbit {
+  display: grid;
+  place-items: center;
+  position: relative;
+  min-height: 320px;
+  padding: space('xl') 0;
+
+  @include below('md') { min-height: 260px; transform: scale(0.8); }
+
+  &__core {
+    position: relative;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #12301b, #0b2012);
+    box-shadow: 0 0 0 10px rgba(194, 217, 138, 0.2), $shadow-lg;
+
+    img { width: 70px; height: 70px; border-radius: 50%; }
+  }
+
+  &__ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px dashed $hairline;
+    border-radius: 50%;
+
+    &--1 { width: 190px; height: 190px; animation: orbit-spin 22s linear infinite; }
+    &--2 { width: 280px; height: 280px; animation: orbit-spin 34s linear infinite reverse; }
+    &--3 { width: 370px; height: 370px; animation: orbit-spin 46s linear infinite; }
+  }
+
+  &__label {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.4rem 0.8rem;
+    border: 1px solid $hairline;
+    border-radius: 999px;
+    background: palette('cream');
+    color: palette('lime-deep');
+    font-family: $font-display;
+    font-weight: 600;
+    font-size: 0.78rem;
+    white-space: nowrap;
+    box-shadow: $shadow;
+
+    .orbit__ring--1 & { animation: orbit-counter 22s linear infinite; }
+    .orbit__ring--2 & { animation: orbit-counter 34s linear infinite reverse; }
+    .orbit__ring--3 & { animation: orbit-counter 46s linear infinite; }
+  }
+}
+
+@keyframes orbit-spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+@keyframes orbit-counter {
+  to { transform: translateX(-50%) rotate(-360deg); }
+}
+
+.panel {
+  @include glass;
+  padding: space('2xl') space('xl');
+  text-align: center;
+}
+
+.hero {
+  padding: space('2xl') 0 space('xl');
+
+  @include below('md') { padding: space('lg') 0; }
+
+  &__typed {
+    display: block;
+    min-height: 1.4em;
+    margin-bottom: space('xs');
+    color: palette('lime-deep');
+    font-family: $font-display;
+    font-weight: 600;
+    font-size: clamp(1rem, 2.4vw, 1.375rem);
+  }
+
+  &__cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    vertical-align: -2px;
+    background: palette('lime-mid');
+    animation: cursor-blink 1s steps(2) infinite;
+  }
+
+  h1 em {
+    font-style: normal;
+    background: linear-gradient(120deg, palette('lime-mid'), palette('lime-deep'));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space('sm');
+    margin: space('lg') 0;
+
+    @include below('md') { .btn { width: 100%; } }
+  }
+
+  &__proof {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem 1.6rem;
+    font-size: 0.9rem;
+    color: palette('ink-soft');
+
+    strong { font-family: $font-display; color: palette('ink'); }
+  }
+}
+
+@keyframes cursor-blink {
+  50% { opacity: 0; }
+}
+
+.section-head {
+  max-width: 44rem;
+  margin-bottom: space('xl');
+
+  p { color: palette('ink-soft'); font-size: 1.03rem; margin-top: space('xs'); }
+}
+
+.page-head {
+  padding: space('xl') 0 space('xs');
+
+  p { color: palette('ink-soft'); font-size: 1.06rem; max-width: 40rem; margin-top: space('sm'); }
+}

@@ -1,0 +1,33 @@
+---
+import type { LegalSection } from '@/data/legal';
+import { lastUpdated } from '@/data/legal';
+import SectionHeader from './SectionHeader.astro';
+
+interface Props {
+  readonly title: string;
+  readonly sections: readonly LegalSection[];
+}
+
+const { title, sections } = Astro.props;
+---
+
+<div class="container">
+  <div class="page-head">
+    <SectionHeader level={1} eyebrow="Legal" title={title} description={`Last updated: ${lastUpdated}`} />
+  </div>
+
+  <section class="section" style="padding-block-start:0">
+    <div class="prose" style="max-width:52rem">
+      {
+        sections.map((section) => (
+          <>
+            <h2>{section.heading}</h2>
+            {section.paragraphs.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
+          </>
+        ))
+      }
+    </div>
+  </section>
+</div>

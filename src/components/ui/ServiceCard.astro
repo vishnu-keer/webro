@@ -1,0 +1,17 @@
+---
+import type { Service } from '@/types';
+import Icon from './Icon.astro';
+
+interface Props {
+  readonly service: Service;
+}
+
+const { service } = Astro.props;
+---
+
+<article class="card reveal">
+  <div class="card__icon"><Icon name={service.icon} /></div>
+  <h3 class="card__title">{service.title}</h3>
+  <p class="card__body">{service.summary}</p>
+  {service.tag && <span class="card__tag">{service.tag}</span>}
+</article>

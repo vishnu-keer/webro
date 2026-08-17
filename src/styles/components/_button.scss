@@ -1,0 +1,42 @@
+@use '../abstracts' as *;
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 46px;
+  padding: 0.8rem 1.4rem;
+  border: 1px solid transparent;
+  border-radius: $radius-sm;
+  font-family: $font-display;
+  font-weight: 600;
+  font-size: 0.94rem;
+  white-space: nowrap;
+  transition: transform 0.18s, box-shadow $duration, background $duration, border-color $duration;
+
+  &:active { transform: scale(0.98); }
+
+  &--primary {
+    background: linear-gradient(135deg, #6aa717, palette('lime-deep'));
+    color: #fff;
+    box-shadow: 0 10px 26px -14px rgba(77, 124, 15, 0.6);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 32px -14px rgba(77, 124, 15, 0.75);
+    }
+  }
+
+  &--ghost {
+    background: palette('cream');
+    border-color: $hairline;
+    color: palette('ink');
+
+    &:hover { transform: translateY(-2px); border-color: palette('lime-mid'); }
+  }
+
+  &--block { width: 100%; }
+
+  &[disabled] { opacity: 0.65; pointer-events: none; }
+}

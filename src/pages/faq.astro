@@ -1,0 +1,48 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import SectionHeader from '@components/ui/SectionHeader.astro';
+import Accordion from '@components/ui/Accordion.astro';
+import { faqs } from '@/data/faqs';
+
+/** FAQPage markup makes these eligible for rich results. */
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+---
+
+<BaseLayout
+  title="FAQ | Costs, Timelines & Ownership — WEBRO"
+  description="How much a website costs, how long it takes, how payments work, what Menu QR and Review QR do, and what happens after launch."
+  keywords="website cost faq, web design questions, how long to build a website, do i own my website code, website payment terms"
+>
+  <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(faqSchema)} />
+
+  <div class="container">
+    <div class="page-head">
+      <SectionHeader
+        level={1}
+        eyebrow="FAQ"
+        title="Questions we get asked a lot"
+        description="Still unsure about something? Message us — we answer properly, not with a sales script."
+      />
+    </div>
+
+    <section class="section" style="padding-block-start:0">
+      <Accordion items={faqs} />
+
+      <div class="panel reveal" style="margin-top:1.75rem;max-width:52rem">
+        <h3>Didn't find your answer?</h3>
+        <p style="margin:0.625rem 0 1.25rem;color:var(--ink-soft,#5b5848)">
+          Ask WEBRO AI in the corner, or message us directly.
+        </p>
+        <a class="btn btn--primary" href="/contact">Contact us</a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

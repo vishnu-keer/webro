@@ -1,0 +1,34 @@
+---
+import type { Plan } from '@/types';
+
+interface Props {
+  readonly plan: Plan;
+}
+
+const { plan } = Astro.props;
+---
+
+<article class:list={['plan', 'reveal', plan.featured && 'plan--featured']}>
+  {plan.featured && <span class="plan__ribbon">Most popular</span>}
+
+  <h3>{plan.name}</h3>
+  <p class="plan__price">{plan.price} <small>{plan.cadence}</small></p>
+  <p class="plan__summary">{plan.summary}</p>
+
+  <ul class="plan__features">
+    {
+      plan.features.map((feature) => (
+        <li>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 13l4 4L19 6" />
+          </svg>
+          {feature}
+        </li>
+      ))
+    }
+  </ul>
+
+  <a class:list={['btn', plan.featured ? 'btn--primary' : 'btn--ghost', 'btn--block']} href="/contact">
+    Get started
+  </a>
+</article>

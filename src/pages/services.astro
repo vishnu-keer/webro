@@ -1,0 +1,60 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import SectionHeader from '@components/ui/SectionHeader.astro';
+import ServiceCard from '@components/ui/ServiceCard.astro';
+import { services, processSteps } from '@/data/services';
+---
+
+<BaseLayout
+  title="Services | Web, App, AI & QR Solutions — WEBRO"
+  description="Website development, mobile apps, e-commerce, custom software, AI automation and chatbots, Instagram handling, Menu QR and Review QR. One team, worldwide delivery."
+  keywords="website development services, mobile app development company, ecommerce website development, custom software development, AI chatbot development, instagram management agency, menu qr code for restaurant, google review qr code, seo services"
+  background="network"
+>
+  <div class="container">
+    <div class="page-head">
+      <SectionHeader
+        level={1}
+        eyebrow="Services"
+        title="Built to make you money, not just look good"
+        description="From a one-page site to a full software platform, plus the tools local businesses actually need."
+      />
+    </div>
+
+    <section class="section" style="padding-block-start:0">
+      <div class="grid grid--3">
+        {services.map((service) => <ServiceCard service={service} />)}
+      </div>
+    </section>
+
+    <section class="section" style="padding-block-start:0">
+      <SectionHeader
+        eyebrow="Process"
+        title="How a project runs"
+        description="Four steps, no mystery. You always know what happens next."
+      />
+      <div class="grid grid--4">
+        {
+          processSteps.map((step) => (
+            <article class="card reveal">
+              <div class="card__icon">{step.step}</div>
+              <h3 class="card__title">{step.title}</h3>
+              <p class="card__body">{step.detail}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="section" style="padding-block-start:0">
+      <div class="panel reveal">
+        <h2>Not sure which service you need?</h2>
+        <p class="lead" style="margin:0.75rem auto 1.5rem">
+          Send us your goal, not a spec. We'll tell you the shortest path to it — even if that means
+          a smaller project.
+        </p>
+        <a class="btn btn--primary" href="/contact">Ask us</a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

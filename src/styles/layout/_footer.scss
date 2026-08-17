@@ -1,0 +1,55 @@
+@use '../abstracts' as *;
+
+.footer {
+  border-top: 1px solid rgba(77, 124, 15, 0.16);
+  margin-top: space('xl');
+  padding: space('2xl') 0 space('lg');
+  background: rgba(251, 247, 238, 0.55);
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr 1fr;
+    gap: space('xl');
+    margin-bottom: space('xl');
+
+    @include below('lg') { grid-template-columns: 1fr 1fr; }
+    @include below('md') { grid-template-columns: 1fr; }
+  }
+
+  &__tagline {
+    color: palette('ink-soft');
+    font-size: 0.9rem;
+    max-width: 20rem;
+    margin-top: space('sm');
+  }
+
+  h2 {
+    font-family: $font-display;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #3f3d33;
+    margin-bottom: space('sm');
+  }
+
+  a:not(.brand) {
+    display: block;
+    color: palette('ink-soft');
+    font-size: 0.9rem;
+    padding: 0.3rem 0;
+    transition: color 0.2s;
+
+    &:hover { color: palette('lime-deep'); }
+  }
+
+  &__bottom {
+    border-top: 1px solid rgba(77, 124, 15, 0.16);
+    padding-top: space('md');
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: space('sm');
+    font-size: 0.84rem;
+    color: palette('ink-soft');
+  }
+}

@@ -1,0 +1,49 @@
+@use '../abstracts' as *;
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: $font-display;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+
+h1 { font-size: clamp(2rem, 6vw, 3.9rem); }
+h2 { font-size: clamp(1.75rem, 4.6vw, 2.6rem); }
+h3 { font-size: 1.2rem; }
+
+.eyebrow {
+  display: inline-block;
+  font-family: $font-display;
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: palette('lime-deep');
+  margin-bottom: space('sm');
+}
+
+.lead {
+  font-size: clamp(1rem, 2vw, 1.19rem);
+  color: palette('ink-soft');
+  max-width: 38rem;
+}
+
+.prose {
+  p {
+    color: palette('ink-soft');
+    margin-bottom: space('md');
+    max-width: 70ch;
+  }
+
+  h2 { margin: space('xl') 0 space('sm'); }
+  h3 { margin: space('lg') 0 space('xs'); }
+
+  ul {
+    margin: 0 0 space('md') space('lg');
+    color: palette('ink-soft');
+  }
+
+  li { margin-bottom: space('xs'); }
+}

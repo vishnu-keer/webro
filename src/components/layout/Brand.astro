@@ -1,0 +1,13 @@
+---
+interface Props {
+  /** Decorative in the footer, where the wordmark already names the company. */
+  readonly labelled?: boolean;
+}
+
+const { labelled = true } = Astro.props;
+---
+
+<a class="brand" href="/" aria-label={labelled ? 'WEBRO Studio — home' : undefined}>
+  <img src="/assets/logo.png" alt={labelled ? 'WEBRO Studio logo' : ''} width="38" height="38" />
+  <span>WEB<em>RO</em></span>
+</a>

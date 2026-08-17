@@ -1,0 +1,14 @@
+---
+/**
+ * Layered page background. The aurora and grain are pure CSS and always
+ * render; the canvas is progressively enhanced by the WebGL renderer.
+ */
+---
+
+<div class="backdrop" aria-hidden="true">
+  <div class="backdrop__aurora backdrop__aurora--1"></div>
+  <div class="backdrop__aurora backdrop__aurora--2"></div>
+  <div class="backdrop__aurora backdrop__aurora--3"></div>
+</div>
+<div class="grain" aria-hidden="true"></div>
+<canvas class="scene-canvas" data-scene-canvas aria-hidden="true"></canvas>

@@ -1,0 +1,18 @@
+---
+interface Props {
+  readonly eyebrow?: string;
+  readonly title: string;
+  readonly description?: string;
+  /** Renders an <h1> on page-lead sections. */
+  readonly level?: 1 | 2;
+}
+
+const { eyebrow, title, description, level = 2 } = Astro.props;
+const Heading = level === 1 ? 'h1' : 'h2';
+---
+
+<div class="section-head">
+  {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+  <Heading>{title}</Heading>
+  {description && <p>{description}</p>}
+</div>

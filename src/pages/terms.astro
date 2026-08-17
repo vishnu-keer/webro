@@ -1,0 +1,12 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import LegalPage from '@components/ui/LegalPage.astro';
+import { termsSections } from '@/data/legal';
+---
+
+<BaseLayout
+  title="Terms of Service — WEBRO"
+  description="The terms that apply to design, development and marketing services provided by WEBRO Studio."
+>
+  <LegalPage title="Terms of Service" sections={termsSections} />
+</BaseLayout>

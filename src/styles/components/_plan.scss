@@ -1,0 +1,66 @@
+@use '../abstracts' as *;
+
+.plan {
+  @include card;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: space('xl') space('lg');
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 22px 46px -24px rgba(40, 50, 15, 0.42);
+  }
+
+  &--featured {
+    border-color: palette('lime-mid');
+    box-shadow: 0 0 0 3px rgba(138, 171, 60, 0.16), $shadow;
+  }
+
+  &__ribbon {
+    position: absolute;
+    top: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.3rem 0.875rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, palette('lime'), palette('lime-mid'));
+    color: palette('ink');
+    font-family: $font-display;
+    font-weight: 600;
+    font-size: 0.75rem;
+  }
+
+  &__price {
+    font-family: $font-display;
+    font-weight: 700;
+    font-size: 2.5rem;
+    margin: space('sm') 0 0.125rem;
+
+    small {
+      font-size: 0.94rem;
+      font-weight: 500;
+      color: palette('ink-soft');
+    }
+  }
+
+  &__summary { color: palette('ink-soft'); font-size: 0.9rem; }
+
+  &__features {
+    list-style: none;
+    display: grid;
+    gap: 0.7rem;
+    margin: space('md') 0 space('lg');
+
+    li {
+      display: flex;
+      gap: 0.625rem;
+      font-size: 0.92rem;
+      color: palette('ink-soft');
+    }
+
+    svg { flex: 0 0 auto; margin-top: 0.25rem; color: palette('lime-mid'); }
+  }
+
+  .btn { margin-top: auto; }
+}

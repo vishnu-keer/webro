@@ -1,0 +1,65 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import SectionHeader from '@components/ui/SectionHeader.astro';
+import { values } from '@/data/services';
+---
+
+<BaseLayout
+  title="About WEBRO | Digital Agency in Jaipur, Serving Worldwide"
+  description="WEBRO is a small digital studio in Jaipur building websites, apps and automation for businesses across India, the US, UK and UAE. Fixed pricing, full code ownership."
+  keywords="digital agency jaipur, web design company india, software company jaipur, about webro studio, web development agency"
+  background="helix"
+>
+  <div class="container">
+    <div class="page-head">
+      <SectionHeader
+        level={1}
+        eyebrow="About WEBRO"
+        title="A small studio that ships fast and tells the truth"
+        description="We build digital products for businesses that want results, not decoration — delivered by people who answer their own emails."
+      />
+    </div>
+
+    <section class="section" style="padding-block-start:0">
+      <div class="grid grid--2" style="align-items:center">
+        <div class="prose reveal">
+          <p>
+            Most agencies split strategy, design and engineering across separate teams who never
+            speak. What ships is the average of their disagreements — slow, generic, and out of date
+            within a year.
+          </p>
+          <p>
+            WEBRO works differently. One team owns the whole thing, from the first conversation to
+            the deploy. Fewer handoffs, faster decisions, and a product that matches what you
+            actually asked for.
+          </p>
+          <p>
+            We work with restaurants, cafés, retailers, startups and growing companies across India,
+            the US, UK, UAE and beyond. Small enough to care, experienced enough to deliver.
+          </p>
+        </div>
+
+        <div class="orbit reveal" aria-hidden="true">
+          <div class="orbit__ring orbit__ring--3"><span class="orbit__label">AI Automation</span></div>
+          <div class="orbit__ring orbit__ring--2"><span class="orbit__label">Mobile Apps</span></div>
+          <div class="orbit__ring orbit__ring--1"><span class="orbit__label">Websites</span></div>
+          <div class="orbit__core"><img src="/assets/logo.png" alt="" width="70" height="70" /></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" style="padding-block-start:0">
+      <SectionHeader eyebrow="How we work" title="Principles we don't bend" />
+      <div class="grid grid--3">
+        {
+          values.map((value) => (
+            <article class="card reveal">
+              <h3 class="card__title">{value.title}</h3>
+              <p class="card__body">{value.detail}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+  </div>
+</BaseLayout>

@@ -1,0 +1,51 @@
+---
+import { site } from '@/data/site';
+import Brand from './Brand.astro';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div>
+        <Brand labelled={false} />
+        <p class="footer__tagline">
+          Websites, apps, e-commerce and AI automation for businesses worldwide. Built in Jaipur,
+          delivered globally.
+        </p>
+      </div>
+
+      <nav aria-labelledby="footer-company">
+        <h2 id="footer-company">Company</h2>
+        <a href="/">Home</a>
+        <a href="/services">Services</a>
+        <a href="/pricing">Pricing</a>
+        <a href="/about">About</a>
+      </nav>
+
+      <nav aria-labelledby="footer-services">
+        <h2 id="footer-services">Services</h2>
+        <a href="/services">Website Development</a>
+        <a href="/services">Mobile Apps</a>
+        <a href="/services">AI Automation</a>
+        <a href="/services">Menu &amp; Review QR</a>
+      </nav>
+
+      <nav aria-labelledby="footer-contact">
+        <h2 id="footer-contact">Get in touch</h2>
+        <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a>
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+        <a href={site.instagram} target="_blank" rel="noopener">Instagram</a>
+        <a href="/contact">Contact form</a>
+      </nav>
+    </div>
+
+    <div class="footer__bottom">
+      <span>© {year} {site.name}. All rights reserved.</span>
+      <span>
+        <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · Jaipur, India — working worldwide
+      </span>
+    </div>
+  </div>
+</footer>

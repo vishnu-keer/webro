@@ -1,0 +1,12 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import LegalPage from '@components/ui/LegalPage.astro';
+import { privacySections } from '@/data/legal';
+---
+
+<BaseLayout
+  title="Privacy Policy — WEBRO"
+  description="How WEBRO Studio collects, uses and protects your personal information."
+>
+  <LegalPage title="Privacy Policy" sections={privacySections} />
+</BaseLayout>
