@@ -5,7 +5,7 @@ export const faqs: readonly Faq[] = [
   {
     question: 'How much does a website cost?',
     answer:
-      'Our sites start at $299 for a one-page build and $899 for a full multi-page website. E-commerce, apps and custom platforms start at $1,999. You get a fixed quote before any work begins — no hourly billing.',
+      'Our sites start at $499 for a one-page build and $899 for a full multi-page website. E-commerce, apps and custom platforms start at $1,999. You get a fixed quote before any work begins — no hourly billing.',
   },
   {
     question: 'How long does it take?',

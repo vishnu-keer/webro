@@ -20,13 +20,13 @@ export const knowledgeBase: readonly KnowledgeEntry[] = [
     id: 'pricing',
     keywords: ['price', 'pricing', 'cost', 'how much', 'charge', 'rate', 'budget', 'quote', 'fees'],
     answer:
-      'Our pricing is fixed and agreed before we start — no hourly billing.\n\n• Starter — $299 (one-page site)\n• Business — $899 (full multi-page website)\n• Premium — from $1,999 (e-commerce, apps, custom platforms)\n\nMonthly: Instagram $199/mo, Menu QR $99 setup + $19/mo, Review QR $79.\n\nSee <a href="/pricing">full pricing</a>, or tell me your project and I will point you to the right tier.',
+      'Our pricing is fixed and agreed before we start — no hourly billing.\n\n• Starter — $499 (one-page site)\n• Business — $899 (full multi-page website)\n• Premium — from $1,999 (e-commerce, apps, custom platforms)\n\nMonthly: Instagram $199/mo, Menu QR $99 setup + $19/mo, Review QR $79.\n\nSee <a href="/pricing">full pricing</a>, or tell me your project and I will point you to the right tier.',
   },
   {
     id: 'budget',
     keywords: ['cheap', 'cheaper', 'discount', 'lower price', 'tight budget', 'afford', 'negotiate'],
     answer:
-      'I understand budgets matter. The Starter package at $299 covers a professional one-page site — enough for most new businesses to start getting enquiries.\n\nWe also split larger projects into stages so you can spread the cost. Tell us your budget honestly on the <a href="/contact">contact page</a> and we will tell you what is realistic within it.',
+      'I understand budgets matter. The Starter package at $499 covers a professional one-page site — enough for most new businesses to start getting enquiries.\n\nWe also split larger projects into stages so you can spread the cost. Tell us your budget honestly on the <a href="/contact">contact page</a> and we will tell you what is realistic within it.',
   },
   {
     id: 'timeline',
@@ -44,7 +44,7 @@ export const knowledgeBase: readonly KnowledgeEntry[] = [
     id: 'website',
     keywords: ['website', 'web design', 'web development', 'landing page', 'business website'],
     answer:
-      'Websites are our core work. You get a custom design (never a template), mobile-first build, fast load times, SEO setup, contact form and WhatsApp integration.\n\nOne-page from $299, full multi-page from $899, delivered in 5 days to 3 weeks depending on size.',
+      'Websites are our core work. You get a custom design (never a template), mobile-first build, fast load times, SEO setup, contact form and WhatsApp integration.\n\nOne-page from $499, full multi-page from $899, delivered in 5 days to 3 weeks depending on size.',
   },
   {
     id: 'apps',

@@ -4,7 +4,7 @@ import type { Plan } from '@/types';
 export const projectPlans: readonly Plan[] = [
   {
     name: 'Starter',
-    price: '$299',
+    price: '$499',
     cadence: 'one-time',
     summary: 'A sharp one-page site for new businesses.',
     features: [
