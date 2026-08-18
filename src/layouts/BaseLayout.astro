@@ -32,9 +32,15 @@ const robots = indexable ? 'index, follow, max-image-preview:large' : 'noindex, 
 /** Same English content everywhere; hreflang signals market coverage. */
 const locales = ['en', 'en-in', 'en-us', 'en-gb', 'en-ae'];
 
+/**
+ * Typed as both so Google reads it as a local entity as well as an agency.
+ * ProfessionalService already inherits from LocalBusiness, but stating both
+ * explicitly is what feeds the Jaipur map pack — which matters more for a
+ * local-first agency than anything else in this file.
+ */
 const organisationSchema = {
   '@context': 'https://schema.org',
-  '@type': 'ProfessionalService',
+  '@type': ['ProfessionalService', 'LocalBusiness'],
   '@id': `${site.url}/#organization`,
   name: site.name,
   alternateName: site.shortName,

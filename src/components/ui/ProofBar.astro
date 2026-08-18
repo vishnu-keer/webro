@@ -1,0 +1,37 @@
+---
+import { caseStudies } from '@/data/work';
+
+/**
+ * Outcome numbers, directly under the hero.
+ *
+ * Audit finding 02: these were the most persuasive content on the site and
+ * they were sitting on /work, one click deep — where most visitors never go.
+ * The number is the headline; the prose is support.
+ */
+const proven = caseStudies.filter((study) => Boolean(study.result));
+---
+
+{
+  proven.length > 0 && (
+    <section class="proof" aria-labelledby="proof-heading">
+      <div class="container">
+        <h2 class="proof__heading" id="proof-heading">
+          What our last two clients got
+        </h2>
+
+        <div class="proof__grid">
+          {proven.map((study) => (
+            <a class="proof__item" href="/work">
+              <p class="proof__figure">{study.result}</p>
+              <p class="proof__client">
+                <strong>{study.client}</strong>
+                <span>{study.industry} · Jaipur</span>
+              </p>
+              <span class="proof__link">See the project →</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}

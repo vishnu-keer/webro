@@ -3,11 +3,22 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import SectionHeader from '@components/ui/SectionHeader.astro';
 import ServiceCard from '@components/ui/ServiceCard.astro';
 import TechMarquee from '@components/ui/TechMarquee.astro';
+import ProofBar from '@components/ui/ProofBar.astro';
 import Icon from '@components/ui/Icon.astro';
 import { site } from '@/data/site';
-import { services, trustSignals } from '@/data/services';
+import { services, trustSignals, processSteps } from '@/data/services';
+import { projectPlans } from '@/data/pricing';
+import { faqs } from '@/data/faqs';
 
+/**
+ * Section order follows the audit's recommended sequence:
+ * hero → proof → services → how it works → trust → pricing teaser → FAQ → CTA.
+ * Each has a real H2 so the page gives search engines something to index and
+ * gives a considered buyer a runway rather than three headings.
+ */
 const featured = services.slice(0, 6);
+const topFaqs = faqs.slice(0, 4);
+const entryPlan = projectPlans.find((plan) => plan.featured) ?? projectPlans[0];
 ---
 
 <BaseLayout
@@ -25,23 +36,23 @@ const featured = services.slice(0, 6);
         and e-commerce stores to mobile apps, custom software and AI agents that handle the busywork.
       </p>
 
+      {/* One primary action, repeated identically down the page. */}
       <div class="hero__actions">
-        <a class="btn btn--primary" href="/contact">Start your project</a>
-        <a class="btn btn--ghost" href="/services">Explore services</a>
+        <a class="btn btn--primary" href="/contact">Get a free quote</a>
+        <a class="hero__secondary" href="/services">or explore services →</a>
       </div>
 
       <div class="hero__proof">
         <span><strong>Fixed</strong> pricing</span>
         <span><strong>1 day</strong> reply time</span>
         <span><strong>100%</strong> code ownership</span>
-        <span><strong>Global</strong> delivery</span>
+        <span><strong>Live in 2–3 weeks</strong></span>
       </div>
     </section>
   </div>
 
-  <section class="section" style="padding-block-start:0">
-    <div class="container"><TechMarquee /></div>
-  </section>
+  {/* Proof immediately after the hero — before a visitor has to take anything on faith. */}
+  <ProofBar />
 
   <section class="section">
     <div class="container">
@@ -54,6 +65,27 @@ const featured = services.slice(0, 6);
         {featured.map((service) => <ServiceCard service={service} />)}
       </div>
       <p style="margin-top:1.75rem"><a class="btn btn--ghost" href="/services">See all services</a></p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHeader
+        eyebrow="How it works"
+        title="Four steps, no mystery"
+        description="You always know what week you're in, what's being built, and what we need from you next."
+      />
+      <div class="grid grid--4">
+        {
+          processSteps.map((step) => (
+            <article class="card reveal">
+              <div class="card__icon">{step.step}</div>
+              <h3 class="card__title">{step.title}</h3>
+              <p class="card__body">{step.detail}</p>
+            </article>
+          ))
+        }
+      </div>
     </div>
   </section>
 
@@ -75,6 +107,58 @@ const featured = services.slice(0, 6);
           ))
         }
       </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHeader
+        eyebrow="Pricing"
+        title="Fixed prices, agreed before we start"
+        description="No hourly billing and no surprise invoices. Every quote is fixed before a line of code is written."
+      />
+      <div class="panel reveal" style="text-align:left">
+        <p class="proof__figure" style="margin-bottom:0.5rem">
+          Full websites from {entryPlan?.price}
+        </p>
+        <p style="color:var(--ink-soft,#5b5848);max-width:38rem">
+          {entryPlan?.summary} One-page sites and larger custom platforms are priced separately —
+          all of it published openly on the pricing page.
+        </p>
+        <p style="margin-top:1.25rem">
+          <a class="btn btn--ghost" href="/pricing">See full pricing</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHeader
+        eyebrow="Common questions"
+        title="What clients ask before they commit"
+        description="The four we hear most. The rest are answered in full on the FAQ page."
+      />
+      <div class="grid grid--2">
+        {
+          topFaqs.map((faq) => (
+            <article class="card reveal">
+              <h3 class="card__title">{faq.question}</h3>
+              <p class="card__body">{faq.answer}</p>
+            </article>
+          ))
+        }
+      </div>
+      <p style="margin-top:1.75rem"><a class="btn btn--ghost" href="/faq">Read all questions</a></p>
+    </div>
+  </section>
+
+  {/* Stack moved well below the fold and cut to four — a café owner does not
+      know what MongoDB is, and a twelve-logo wall reads as "we do anything". */}
+  <section class="section" style="padding-block:1.75rem">
+    <div class="container">
+      <p class="proof__heading">Built with</p>
+      <TechMarquee />
     </div>
   </section>
 

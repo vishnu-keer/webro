@@ -4,17 +4,17 @@ export interface TechLogo {
   readonly slug: string;
 }
 
+/**
+ * Deliberately four, not twelve.
+ *
+ * A twelve-logo wall mixing WordPress, Shopify, Flutter and MongoDB reads as
+ * "we do anything", which a buyer hears as "they specialise in nothing" — and
+ * a cafe owner does not know what MongoDB is. These four cover what actually
+ * ships client work and are recognisable enough to mean something.
+ */
 export const techLogos: readonly TechLogo[] = [
   { name: 'React', slug: 'react/react-original' },
   { name: 'Next.js', slug: 'nextjs/nextjs-original' },
-  { name: 'Node.js', slug: 'nodejs/nodejs-original' },
-  { name: 'TypeScript', slug: 'typescript/typescript-original' },
-  { name: 'Tailwind', slug: 'tailwindcss/tailwindcss-original' },
-  { name: 'Figma', slug: 'figma/figma-original' },
-  { name: 'WordPress', slug: 'wordpress/wordpress-plain' },
   { name: 'Shopify', slug: 'shopify/shopify-original' },
-  { name: 'Python', slug: 'python/python-original' },
-  { name: 'Firebase', slug: 'firebase/firebase-plain' },
-  { name: 'Flutter', slug: 'flutter/flutter-original' },
-  { name: 'MongoDB', slug: 'mongodb/mongodb-original' },
+  { name: 'Figma', slug: 'figma/figma-original' },
 ];

@@ -181,3 +181,71 @@
     }
   }
 }
+
+// Homepage proof block — the numbers carry the section, so they are the
+// largest type on the page after the hero itself.
+.proof {
+  padding-block: space('lg');
+
+  &__heading {
+    font-size: 0.82rem;
+    font-family: $font-display;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: palette('lime-deep');
+    margin-bottom: space('md');
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: space('md');
+
+    @include below('md') {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__item {
+    @include card;
+    display: block;
+    padding: space('lg');
+
+    &:hover {
+      transform: translateY(-4px);
+      border-color: palette('lime-mid');
+      box-shadow: 0 22px 46px -24px rgba(40, 50, 15, 0.42);
+    }
+  }
+
+  &__figure {
+    font-family: $font-display;
+    font-weight: 700;
+    font-size: clamp(1.3rem, 2.6vw, 1.85rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: space('sm');
+  }
+
+  &__client {
+    strong {
+      display: block;
+      font-family: $font-display;
+      font-size: 0.98rem;
+    }
+    span {
+      font-size: 0.85rem;
+      color: palette('ink-soft');
+    }
+  }
+
+  &__link {
+    display: inline-block;
+    margin-top: space('sm');
+    font-family: $font-display;
+    font-weight: 600;
+    font-size: 0.86rem;
+    color: palette('lime-deep');
+  }
+}

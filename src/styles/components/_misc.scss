@@ -259,3 +259,16 @@
 .splash-seen .loader {
   display: none;
 }
+
+// Secondary action is a text link so it never competes with the primary CTA.
+.hero__secondary {
+  align-self: center;
+  font-family: $font-display;
+  font-weight: 600;
+  font-size: 0.94rem;
+  color: palette('lime-deep');
+  text-decoration: underline;
+  text-underline-offset: 4px;
+
+  &:hover { color: palette('ink'); }
+}
