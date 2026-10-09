@@ -31,7 +31,7 @@ export const privacySections: readonly LegalSection[] = [
   {
     heading: 'Third parties',
     paragraphs: [
-      'Form submissions are delivered through Web3Forms, which passes the message to our email inbox. Analytics, when enabled, is provided by Google Analytics. Fonts are served by Google Fonts and some icons by jsDelivr. Each of these providers has its own privacy policy.',
+      'Form submissions are delivered through Web3Forms, which passes the message to our email inbox. Analytics is provided by Google Analytics. Some icons are served by jsDelivr; fonts are hosted on this site. Each of these providers has its own privacy policy.',
       'Our contact page embeds a Google Maps frame, which may set cookies from Google when loaded.',
     ],
   },

@@ -37,14 +37,14 @@ export const site = {
    * Google Analytics 4 measurement ID.
    * Leave empty to disable analytics entirely — no script is emitted.
    */
-  gaMeasurementId: '',
+  gaMeasurementId: 'G-6BQ8VFFVWB',
 
   /**
    * Web3Forms access key for the contact form (https://web3forms.com).
    * Leave empty and the form falls back to a pre-filled mailto link so an
    * enquiry is never silently lost.
    */
-  web3formsKey: '',
+  web3formsKey: '17ebad3d-e392-4568-b00e-a679f9a30d89',
 } as const;
 
 /**
