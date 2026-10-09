@@ -87,7 +87,7 @@ const fields = [
               <strong>Studio location</strong>
               <span>
                 WEBRO Studio, {site.location.locality}, {site.location.region}, India<br />
-                <a href={site.location.mapsUrl} target="_blank" rel="noopener">Open in Google Maps</a>
+                <a href={site.location.mapsSearchUrl} target="_blank" rel="noopener">Open in Google Maps</a>
               </span>
             </div>
           </div>
@@ -97,7 +97,16 @@ const fields = [
               title="WEBRO Studio location on Google Maps"
               src={mapEmbed}
               loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"></iframe>
+              referrerpolicy="no-referrer-when-downgrade"
+              tabindex="-1"></iframe>
+            {/* The whole map is one link to the listing; the embed itself
+                stays visible underneath but no longer swallows the click. */}
+            <a
+              class="map-embed__link"
+              href={site.location.mapsSearchUrl}
+              target="_blank"
+              rel="noopener"
+              aria-label="Open WEBRO Studio in Google Maps"></a>
           </div>
         </div>
 

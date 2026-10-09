@@ -29,6 +29,12 @@ export const site = {
     country: 'IN',
     latitude: 26.8176736,
     longitude: 75.8617171,
+    /**
+     * What visitors open from the contact page: Google Maps search for the
+     * business, which shows the listing with photos, rating and reviews.
+     * Tracking parameters from a copied browser URL are deliberately left off.
+     */
+    mapsSearchUrl: 'https://www.google.com/maps?q=webro+studio',
     mapsUrl:
       'https://www.google.com/maps/place/WEBRO+Studio/@26.8176736,75.8591422,761m/data=!3m2!1e3!4b1!4m6!3m5!1s0x396dc96ac7f960d7:0x2caa4d48a42dc22c!8m2!3d26.8176736!4d75.8617171',
   },
