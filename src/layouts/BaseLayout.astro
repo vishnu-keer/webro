@@ -1,7 +1,7 @@
 ---
 import { ViewTransitions } from 'astro:transitions';
 import type { SeoProps } from '@/types';
-import { site } from '@/data/site';
+import { site, navLinks } from '@/data/site';
 import { services } from '@/data/services';
 import Header from '@components/layout/Header.astro';
 import Footer from '@components/layout/Footer.astro';
@@ -75,6 +75,42 @@ const organisationSchema = {
     })),
   },
 };
+
+/** Lets Google tie every page back to one named site and publisher. */
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${site.url}/#website`,
+  name: site.name,
+  alternateName: site.shortName,
+  url: site.url,
+  inLanguage: 'en',
+  publisher: { '@id': `${site.url}/#organization` },
+};
+
+/**
+ * Breadcrumbs replace the raw URL in search results ("webro.studio › Pricing").
+ * Labels come from the navigation so they always match what visitors see.
+ * The homepage and non-indexable pages (404) get none.
+ */
+const pageLabels: Record<string, string> = {
+  ...Object.fromEntries(navLinks.map((link) => [link.href, link.label])),
+  '/privacy': 'Privacy Policy',
+  '/terms': 'Terms of Service',
+};
+const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+const pageLabel = pageLabels[path];
+const breadcrumbSchema =
+  indexable && path !== '/' && pageLabel
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.url}/` },
+          { '@type': 'ListItem', position: 2, name: pageLabel, item: canonical },
+        ],
+      }
+    : null;
 ---
 
 <!doctype html>
@@ -135,6 +171,8 @@ const organisationSchema = {
     <ViewTransitions />
 
     <script is:inline type="application/ld+json" set:html={JSON.stringify(organisationSchema)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+    {breadcrumbSchema && <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />}
     <slot name="head" />
 
     {

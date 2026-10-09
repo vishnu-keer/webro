@@ -12,7 +12,7 @@ export const site = {
   url: 'https://webro.studio',
   tagline: 'Websites, apps and AI automation that grow your business.',
   description:
-    'WEBRO builds high-performance websites, mobile apps, e-commerce stores and AI automation for businesses worldwide. Menu QR, Review QR and Instagram management for restaurants and local brands.',
+    'WEBRO builds fast websites, apps, online stores and AI automation for businesses worldwide, plus Menu QR and Review QR for restaurants. Fixed pricing.',
 
   email: 'webro284@gmail.com',
   phone: '+916377093356',
