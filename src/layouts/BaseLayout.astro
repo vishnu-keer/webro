@@ -25,7 +25,13 @@ type Props = SeoProps;
 
 const { title, description, keywords, indexable = true, background } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, site.url).href;
+/**
+ * build.format 'file' makes Astro see paths as /services.html, but the site
+ * links, sitemap and GitHub Pages all serve /services. The canonical must match
+ * those, or Google gets two URLs for every page and splits ranking between them.
+ */
+const cleanPath = Astro.url.pathname.replace(/(index)?\.html$/, '').replace(/(.)\/$/, '$1');
+const canonical = new URL(cleanPath, site.url).href;
 const ogImage = new URL('/assets/og-image.png', site.url).href;
 const robots = indexable ? 'index, follow, max-image-preview:large' : 'noindex, follow';
 
@@ -98,7 +104,7 @@ const pageLabels: Record<string, string> = {
   '/privacy': 'Privacy Policy',
   '/terms': 'Terms of Service',
 };
-const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+const path = cleanPath || '/';
 const pageLabel = pageLabels[path];
 const breadcrumbSchema =
   indexable && path !== '/' && pageLabel
