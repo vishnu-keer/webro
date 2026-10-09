@@ -21,6 +21,9 @@ export const site = {
   instagram: 'https://www.instagram.com/webro.studio/',
 
   location: {
+    /** Matches the Google Business Profile exactly — Google cross-checks NAP. */
+    streetAddress: 'House No. 45, Shiv Vihar Colony, near Akshay Patra Temple, Jagatpura',
+    postalCode: '302017',
     locality: 'Jaipur',
     region: 'Rajasthan',
     country: 'IN',

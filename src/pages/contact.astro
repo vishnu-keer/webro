@@ -4,7 +4,16 @@ import SectionHeader from '@components/ui/SectionHeader.astro';
 import { site } from '@/data/site';
 import { services } from '@/data/services';
 
-const mapEmbed = `https://www.google.com/maps?q=${site.location.latitude},${site.location.longitude}&z=16&output=embed`;
+/**
+ * Searching by business name + address (not raw coordinates) makes the embed
+ * resolve to the Google Business Profile, so the frame shows the WEBRO Studio
+ * card and its "Open in Maps" lands on the listing with reviews — not an
+ * unnamed dropped pin.
+ */
+const mapQuery = encodeURIComponent(
+  `WEBRO Studio, ${site.location.streetAddress}, ${site.location.locality}, ${site.location.region} ${site.location.postalCode}`,
+);
+const mapEmbed = `https://www.google.com/maps?q=${mapQuery}&z=16&output=embed`;
 
 const fields = [
   { id: 'name', label: 'Your name', type: 'text', autocomplete: 'name', placeholder: 'Jane Cooper', error: 'Please enter your name.' },

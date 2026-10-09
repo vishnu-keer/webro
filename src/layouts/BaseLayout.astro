@@ -60,6 +60,8 @@ const organisationSchema = {
   currenciesAccepted: 'USD, INR',
   address: {
     '@type': 'PostalAddress',
+    streetAddress: site.location.streetAddress,
+    postalCode: site.location.postalCode,
     addressLocality: site.location.locality,
     addressRegion: site.location.region,
     addressCountry: site.location.country,
