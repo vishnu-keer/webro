@@ -24,7 +24,7 @@ interface DraftResponse {
 }
 
 interface Payload {
-  service: string;
+  services: string[];
   otherService: string;
   liked: string[];
   note: string;
@@ -128,7 +128,7 @@ export function initReviewHelper(): void {
   const read = (): Payload => {
     const data = new FormData(form);
     return {
-      service: String(data.get('service') ?? ''),
+      services: data.getAll('services').map(String),
       otherService: String(data.get('otherService') ?? '').trim(),
       liked: data.getAll('liked').map(String),
       note: String(data.get('note') ?? '').trim(),
@@ -138,11 +138,11 @@ export function initReviewHelper(): void {
 
   const validate = (payload: Payload): boolean => {
     let ok = true;
-    if (!payload.service) {
+    if (payload.services.length === 0) {
       setStepError('service', 'Please choose what we did for you.');
       ok = false;
-    } else if (payload.service === 'Other' && payload.otherService.length < OTHER_MIN) {
-      setStepError('service', 'Please type which service we did for you.');
+    } else if (payload.services.includes('Other') && payload.otherService.length < OTHER_MIN) {
+      setStepError('service', 'Please type the other service we did for you.');
       ok = false;
     } else {
       setStepError('service', null);
@@ -162,10 +162,9 @@ export function initReviewHelper(): void {
   // Live feedback: show "Other" input, clear errors as soon as they are fixed.
   form.addEventListener('change', (event) => {
     const target = event.target as HTMLInputElement;
-    if (target.name === 'service') {
-      const isOther = target.value === 'Other';
-      if (otherWrap) otherWrap.hidden = !isOther;
-      if (isOther) otherInput?.focus();
+    if (target.name === 'services' && target.value === 'Other') {
+      if (otherWrap) otherWrap.hidden = !target.checked;
+      if (target.checked) otherInput?.focus();
     }
     if (form.querySelector('[data-invalid="true"]')) validate(read());
   });

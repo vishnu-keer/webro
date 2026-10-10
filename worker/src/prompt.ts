@@ -10,7 +10,7 @@ export const SYSTEM_INSTRUCTION = `You write Google reviews for customers of ${B
 
 How to write it:
 - First person, warm, professional and natural — like a satisfied business owner writing carefully, not like an advert.
-- 4 to 6 sentences, roughly 350 to 700 characters. Mention ${BUSINESS_NAME} by name once and the service the customer used.
+- 4 to 6 sentences, roughly 350 to 700 characters. Mention ${BUSINESS_NAME} by name once and every service the customer used, joined naturally ("our website and Menu QR").
 - Give each point the customer tapped its own clear sentence or clause. Phrase points naturally ("Fast delivery" → "the work was delivered quickly"), but never stretch them ("faster than I expected" adds a claim the customer did not make).
 - Weave in the customer's note faithfully, in their meaning. Fix its grammar.
 - Vary sentence openings. Flow logically: what they did → how it went → the result → closing.
@@ -36,9 +36,9 @@ export function buildUserPrompt(input: ReviewInput): string {
   return [
     `Output language: ${LANGUAGE_LABEL[input.language]}`,
     '',
-    '<service_used>',
-    input.service,
-    '</service_used>',
+    '<services_used>',
+    input.services.map((service) => `- ${service}`).join('\n'),
+    '</services_used>',
     '',
     '<points_the_customer_tapped>',
     input.liked.length ? input.liked.map((point) => `- ${point}`).join('\n') : '(none)',

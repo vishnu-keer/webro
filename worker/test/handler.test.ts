@@ -21,7 +21,7 @@ function env(overrides: Partial<Env> = {}): Env {
 }
 
 const goodBody = {
-  service: 'Website',
+  services: ['Website', 'Menu QR'],
   liked: ['Fast delivery', 'Great design'],
   note: 'Menu page could load faster.',
   language: 'en',

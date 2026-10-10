@@ -48,20 +48,21 @@ const privacyNotice =
       >
         <fieldset class="review__step" data-step="service">
           <legend
-            ><span class="review__num" aria-hidden="true">1</span>What did we do for you?</legend
+            ><span class="review__num" aria-hidden="true">1</span>What did we do for you?
+            <small>Tap all that apply</small></legend
           >
           <div class="review__chips">
             {
-              SERVICES.map((service, i) => (
-                <label class="pick">
-                  <input type="radio" name="service" value={service} required={i === 0} />
+              SERVICES.map((service) => (
+                <label class="pick pick--check">
+                  <input type="checkbox" name="services" value={service} />
                   <span>{service}</span>
                 </label>
               ))
             }
           </div>
           <div class="field review__other" data-other-wrap hidden>
-            <label for="review-other">Which service?</label>
+            <label for="review-other">Which other service?</label>
             <input
               id="review-other"
               name="otherService"

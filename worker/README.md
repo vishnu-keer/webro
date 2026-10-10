@@ -59,7 +59,7 @@ Quick API test, in a second terminal:
 ```bash
 curl -s -X POST http://localhost:8787/draft \
   -H 'Origin: http://localhost:4321' -H 'Content-Type: application/json' \
-  -d '{"service":"Website","liked":["Fast delivery","Great design"],"note":"They missed one deadline.","language":"en"}'
+  -d '{"services":["Website","Menu QR"],"liked":["Fast delivery","Great design"],"note":"They missed one deadline.","language":"en"}'
 ```
 
 To test the page against the local Worker, temporarily set `review.apiUrl` in `src/data/site.ts` to `http://localhost:8787/draft`. Then run `npm run dev` in the site root and open `http://localhost:4321/review`. Do not commit that local URL.

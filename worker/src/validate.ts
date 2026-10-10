@@ -1,8 +1,8 @@
 import { INPUT_LIMITS, LANGUAGES, LIKED, SERVICES, type Language, type Liked } from './options';
 
 export interface ReviewInput {
-  /** A listed service, or the customer's own short label when they chose "Other". */
-  service: string;
+  /** Listed services, with "Other" replaced by the customer's own short label. */
+  services: string[];
   liked: Liked[];
   note: string;
   language: Language;
@@ -47,21 +47,32 @@ export function validateInput(body: unknown): ValidationResult {
   const record = body as Record<string, unknown>;
   const fields: Partial<Record<FieldName, string>> = {};
 
-  // Service: one of the listed buttons, or "Other" plus a short label.
-  const serviceRaw = asString(record['service']);
+  // Services: one or more listed buttons. "Other" needs a short label.
+  // A single string is still accepted so an older cached page keeps working.
+  const servicesInput = record['services'] ?? record['service'];
+  const servicesRaw = typeof servicesInput === 'string' ? [servicesInput] : (servicesInput ?? []);
   const otherRaw = asString(record['otherService']);
-  let service = '';
-  if (!serviceRaw || !(SERVICES as readonly string[]).includes(serviceRaw)) {
+  const services: string[] = [];
+  if (
+    !Array.isArray(servicesRaw) ||
+    servicesRaw.length === 0 ||
+    servicesRaw.length > SERVICES.length ||
+    !servicesRaw.every((item) => (SERVICES as readonly unknown[]).includes(item))
+  ) {
     fields.service = 'Please choose what we did for you.';
-  } else if (serviceRaw === 'Other') {
-    const { min, max } = INPUT_LIMITS.otherService;
-    if (otherRaw === null || otherRaw.length < min || otherRaw.length > max) {
-      fields.service = `Please tell us the service in ${min}–${max} characters.`;
-    } else {
-      service = redactContactDetails(otherRaw);
-    }
   } else {
-    service = serviceRaw;
+    for (const item of new Set(servicesRaw as string[])) {
+      if (item !== 'Other') {
+        services.push(item);
+        continue;
+      }
+      const { min, max } = INPUT_LIMITS.otherService;
+      if (otherRaw === null || otherRaw.length < min || otherRaw.length > max) {
+        fields.service = `Please tell us the other service in ${min}–${max} characters.`;
+      } else {
+        services.push(redactContactDetails(otherRaw));
+      }
+    }
   }
 
   // Liked: a set of listed values only. Anything else is rejected, not ignored.
@@ -103,6 +114,6 @@ export function validateInput(body: unknown): ValidationResult {
 
   return {
     ok: true,
-    value: { service, liked, note: redactContactDetails(note), language },
+    value: { services, liked, note: redactContactDetails(note), language },
   };
 }
