@@ -1,0 +1,131 @@
+@use '../abstracts' as *;
+
+// AI review helper (/review). Reuses .panel, .field and .btn; only layout and
+// the notices are specific to this page.
+
+.review {
+  .page-head {
+    max-width: 40rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+  .page-head p {
+    margin-inline: auto;
+  }
+
+  &__body {
+    max-width: 40rem;
+    margin-inline: auto;
+  }
+
+  // .panel.review__panel: beats .panel (centred, roomy), which loads later.
+  &__panel.panel {
+    text-align: left;
+    padding: 1.75rem;
+
+    @include below('md') {
+      padding: 1.25rem 1rem;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 6rem;
+      line-height: 1.5;
+    }
+  }
+
+  &__optional {
+    font-weight: 400;
+    color: palette('ink-soft');
+  }
+
+  &__note {
+    margin: 0 0 space('md');
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: palette('ink-soft');
+  }
+
+  &__status,
+  &__copy-status {
+    margin-top: space('sm');
+    font-size: 0.92rem;
+    line-height: 1.5;
+
+    &:empty {
+      display: none;
+    }
+
+    &[data-tone='error'] {
+      color: palette('danger');
+    }
+    &[data-tone='ok'] {
+      color: palette('lime-deep');
+      font-weight: 500;
+    }
+  }
+
+  &__notice {
+    margin: 0 0 space('md');
+    padding: space('sm') space('md');
+    border: 1px solid $hairline;
+    border-radius: $radius-sm;
+    background: rgba(194, 217, 138, 0.18);
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: palette('ink');
+  }
+
+  // Two separate actions, side by side on wide screens, stacked on phones.
+  &__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: space('sm');
+
+    @include below('md') {
+      grid-template-columns: 1fr;
+    }
+
+    .btn {
+      width: 100%;
+    }
+  }
+
+  &__steps {
+    margin: space('md') 0 0;
+    padding-left: 1.25rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: palette('ink-soft');
+  }
+
+  &__back {
+    margin-top: space('md');
+    padding: 0.5rem 0;
+    border: 0;
+    background: none;
+    color: palette('lime-deep');
+    font: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  &__direct {
+    margin-top: space('lg');
+    text-align: center;
+    font-size: 0.92rem;
+    color: palette('ink-soft');
+
+    a {
+      color: palette('lime-deep');
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+}

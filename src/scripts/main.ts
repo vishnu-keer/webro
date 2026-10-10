@@ -9,6 +9,7 @@ import { initAccordion } from './modules/accordion';
 import { initTypewriter } from './modules/typewriter';
 import { initAnalytics } from './modules/analytics';
 import { initContactForm } from './modules/contact-form';
+import { initReviewHelper } from './modules/review-helper';
 import { initChatWidget } from './chat/widget';
 import { initBackground } from './background/renderer';
 
@@ -50,6 +51,8 @@ function initPage(): void {
     email: site.email,
     phoneDisplay: site.phoneDisplay,
   });
+
+  initReviewHelper();
 
   const sceneName = document.body.dataset.scene as BackgroundScene | undefined;
   if (sceneName) void initBackground(sceneName);

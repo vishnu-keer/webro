@@ -54,6 +54,23 @@ export const site = {
    * enquiry is never silently lost.
    */
   web3formsKey: '17ebad3d-e392-4568-b00e-a679f9a30d89',
+
+  /** AI review helper at /review. Neither value is a secret. */
+  review: {
+    /** Official Google review link for the Business Profile. */
+    googleReviewUrl: 'https://g.page/r/CSzCLaRITaosEBM/review',
+    /**
+     * The Cloudflare Worker in /worker (it holds the Gemini key — the site
+     * never does). Leave empty until deployed: the page then skips the AI step
+     * and still lets customers write and post their own review.
+     */
+    apiUrl: '',
+    /**
+     * Must match the Gemini API tier of the key in the Worker. The free tier
+     * lets Google use submitted text to improve its products; paid does not.
+     */
+    geminiTier: 'free' as 'free' | 'paid',
+  },
 } as const;
 
 /**

@@ -10,7 +10,10 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://webro.studio',
   trailingSlash: 'ignore',
-  integrations: [sitemap()],
+  integrations: [
+    // /review is a utility page for existing customers (noindex), not a landing page.
+    sitemap({ filter: (page) => !/\/review\/?$/.test(page) }),
+  ],
   build: {
     // Emit /about.html rather than /about/index.html so URLs match the
     // existing indexed pages and no redirects are needed.

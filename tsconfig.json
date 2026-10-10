@@ -38,6 +38,7 @@
     "dist",
     "node_modules",
     ".astro",
-    "webro"
+    "webro",
+    "worker"
   ]
 }

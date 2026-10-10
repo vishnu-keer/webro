@@ -1,0 +1,169 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import SectionHeader from '@components/ui/SectionHeader.astro';
+import { site } from '@/data/site';
+
+/**
+ * AI review helper.
+ *
+ * A separate page that helps a customer put their own experience into words,
+ * then sends them to Google to paste, rate and post it themselves. Nothing is
+ * posted automatically and no rating is ever chosen for them.
+ *
+ * Limits mirror worker/src/config.ts — the Worker re-validates everything.
+ */
+const { googleReviewUrl, apiUrl, geminiTier } = site.review;
+const aiEnabled = apiUrl !== '';
+
+const privacyNotice =
+  geminiTier === 'free'
+    ? "When you press Generate, the text you typed is sent to Google's Gemini AI to prepare the draft. This uses the Gemini API free tier: Google may use the text to improve its products, and trained reviewers may read it. Please don't include names, phone numbers or other personal details. We don't store what you write."
+    : "When you press Generate, the text you typed is sent to Google's Gemini AI to prepare the draft. Under the paid Gemini API terms, Google does not use it to improve its products. Please don't include names, phone numbers or other personal details. We don't store what you write.";
+---
+
+<BaseLayout
+  title="Share Your Experience — WEBRO Studio"
+  description="Leave a Google review for WEBRO Studio. An optional AI helper turns your own notes into a clear draft you can edit before posting."
+  indexable={false}
+>
+  <div class="container review">
+    <div class="page-head">
+      <SectionHeader
+        level={1}
+        eyebrow={site.name}
+        title="Share Your Experience"
+        description="Tell us what actually happened, in your own words. AI only helps tidy the wording — it keeps your meaning and your opinion, good or bad."
+      />
+    </div>
+
+    <section class="section review__body" style="padding-block-start:0">
+      <form
+        class="panel review__panel"
+        data-review-form
+        data-api-url={apiUrl}
+        novalidate
+        hidden={!aiEnabled}
+        aria-describedby="review-privacy"
+      >
+        <div class="field" data-invalid="false">
+          <label for="review-service">What service or product did you use?</label>
+          <input
+            id="review-service"
+            name="service"
+            type="text"
+            maxlength="120"
+            autocomplete="off"
+            placeholder="e.g. Website, Menu QR, Instagram handling"
+            required
+          />
+          <span class="field__error" data-error-for="service"
+            >Please tell us which service or product you used.</span
+          >
+        </div>
+
+        <div class="field" data-invalid="false">
+          <label for="review-experience">Describe your experience</label>
+          <textarea
+            id="review-experience"
+            name="experience"
+            rows="5"
+            maxlength="1500"
+            placeholder="What happened, and how did you feel about it? Good, bad or mixed — be honest."
+            required></textarea>
+          <span class="field__error" data-error-for="experience"
+            >Please write at least a sentence about your experience.</span
+          >
+        </div>
+
+        <div class="field" data-invalid="false">
+          <label for="review-details"
+            >Specific details <span class="review__optional">(optional)</span></label
+          >
+          <textarea
+            id="review-details"
+            name="details"
+            rows="3"
+            maxlength="800"
+            placeholder="What went well? What could be improved?"></textarea>
+          <span class="field__error" data-error-for="details"
+            >Please keep this under 800 characters.</span
+          >
+        </div>
+
+        <div class="field">
+          <label for="review-language"
+            >Draft language <span class="review__optional">(optional)</span></label
+          >
+          <select id="review-language" name="language">
+            <option value="auto">Same as I wrote</option>
+            <option value="en">English</option>
+            <option value="hi" lang="hi">हिन्दी (Hindi)</option>
+          </select>
+        </div>
+
+        <p class="review__note" id="review-privacy">{privacyNotice}</p>
+
+        <button class="btn btn--primary btn--block" type="submit" data-review-generate
+          >Generate Review Draft</button
+        >
+
+        <div class="review__status" data-review-status role="status" aria-live="polite"></div>
+      </form>
+
+      <div class="panel review__panel review__result" data-review-result hidden={aiEnabled}>
+        <div class="field">
+          <label for="review-draft" data-draft-label>
+            {aiEnabled ? 'Your draft — edit it freely' : 'Write your review'}
+          </label>
+          <textarea
+            id="review-draft"
+            name="draft"
+            rows="7"
+            maxlength="4000"
+            placeholder="Write about your experience in your own words."></textarea>
+        </div>
+
+        <p class="review__notice" data-ai-notice hidden>
+          AI helped prepare this draft. Please ensure it accurately reflects your genuine experience
+          before posting.
+        </p>
+
+        <div class="review__actions">
+          <button class="btn btn--primary" type="button" data-review-copy>Copy Review</button>
+          <a
+            class="btn btn--ghost"
+            href={googleReviewUrl}
+            target="_blank"
+            rel="noopener"
+            data-review-open
+          >
+            Open Google Reviews
+          </a>
+        </div>
+
+        <div class="review__copy-status" data-copy-status role="status" aria-live="polite"></div>
+
+        <ol class="review__steps">
+          <li>Tap <strong>Copy Review</strong>.</li>
+          <li>Tap <strong>Open Google Reviews</strong>.</li>
+          <li>Paste the text into Google's review box and check it.</li>
+          <li>Choose your own star rating and submit it yourself.</li>
+        </ol>
+
+        {
+          aiEnabled && (
+            <button class="review__back" type="button" data-review-back>
+              ← Change my answers
+            </button>
+          )
+        }
+      </div>
+
+      <p class="review__direct">
+        Prefer to skip all this? <a href={googleReviewUrl} target="_blank" rel="noopener"
+          >Write your review directly on Google</a
+        >.
+      </p>
+    </section>
+  </div>
+</BaseLayout>
