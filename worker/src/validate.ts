@@ -1,17 +1,19 @@
-import { LANGUAGES, LIMITS, type Language } from './config';
+import { INPUT_LIMITS, LANGUAGES, LIKED, SERVICES, type Language, type Liked } from './options';
 
 export interface ReviewInput {
+  /** A listed service, or the customer's own short label when they chose "Other". */
   service: string;
-  experience: string;
-  details: string;
+  liked: Liked[];
+  note: string;
   language: Language;
 }
 
-export type ValidationResult =
-  | { ok: true; value: ReviewInput }
-  | { ok: false; fields: Partial<Record<keyof ReviewInput, string>> };
+type FieldName = 'service' | 'liked' | 'note' | 'language';
 
-/** Removes control characters (keeps newlines and tabs) and collapses runs of blank lines. */
+export type ValidationResult =
+  { ok: true; value: ReviewInput } | { ok: false; fields: Partial<Record<FieldName, string>> };
+
+/** Removes control characters (keeps newlines) and collapses runs of blank lines. */
 export function clean(value: string): string {
   return (
     value
@@ -25,7 +27,7 @@ export function clean(value: string): string {
 }
 
 /**
- * The form never asks for contact details, but customers sometimes type them
+ * The page never asks for contact details, but customers sometimes type them
  * anyway. They add nothing to a review, so they are removed before anything
  * is sent to Gemini.
  */
@@ -35,75 +37,72 @@ export function redactContactDetails(value: string): string {
     .replace(/(?:\+?\d[\s-]?){9,14}\d/g, '[removed]');
 }
 
-function readString(body: Record<string, unknown>, key: string): string | null {
-  const raw = body[key];
-  if (raw === undefined || raw === null) return '';
-  return typeof raw === 'string' ? clean(raw) : null;
-}
-
-/** Checks one length-bounded text field and records an error message if it fails. */
-function checkLength(
-  value: string | null,
-  bounds: { min: number; max: number },
-  messages: { missing: string; short: string; long: string },
-): string | undefined {
-  if (value === null) return messages.missing;
-  if (value.length === 0 && bounds.min > 0) return messages.missing;
-  if (value.length < bounds.min) return messages.short;
-  if (value.length > bounds.max) return messages.long;
-  return undefined;
-}
+const asString = (value: unknown): string | null =>
+  value === undefined || value === null ? '' : typeof value === 'string' ? clean(value) : null;
 
 export function validateInput(body: unknown): ValidationResult {
   if (typeof body !== 'object' || body === null || Array.isArray(body)) {
-    return { ok: false, fields: { experience: 'The request was not understood.' } };
+    return { ok: false, fields: { service: 'The request was not understood.' } };
   }
   const record = body as Record<string, unknown>;
+  const fields: Partial<Record<FieldName, string>> = {};
 
-  const service = readString(record, 'service');
-  const experience = readString(record, 'experience');
-  const details = readString(record, 'details');
-  const languageRaw = record['language'] ?? 'auto';
+  // Service: one of the listed buttons, or "Other" plus a short label.
+  const serviceRaw = asString(record['service']);
+  const otherRaw = asString(record['otherService']);
+  let service = '';
+  if (!serviceRaw || !(SERVICES as readonly string[]).includes(serviceRaw)) {
+    fields.service = 'Please choose what we did for you.';
+  } else if (serviceRaw === 'Other') {
+    const { min, max } = INPUT_LIMITS.otherService;
+    if (otherRaw === null || otherRaw.length < min || otherRaw.length > max) {
+      fields.service = `Please tell us the service in ${min}–${max} characters.`;
+    } else {
+      service = redactContactDetails(otherRaw);
+    }
+  } else {
+    service = serviceRaw;
+  }
+
+  // Liked: a set of listed values only. Anything else is rejected, not ignored.
+  const likedRaw = record['liked'] ?? [];
+  let liked: Liked[] = [];
+  if (
+    !Array.isArray(likedRaw) ||
+    likedRaw.length > INPUT_LIMITS.maxLiked ||
+    !likedRaw.every((item) => (LIKED as readonly unknown[]).includes(item))
+  ) {
+    fields.liked = 'Please choose from the options shown.';
+  } else {
+    liked = [...new Set(likedRaw as Liked[])];
+  }
+
+  const note = asString(record['note']);
+  if (note === null) fields.note = 'The note must be text.';
+  else if (note.length > INPUT_LIMITS.note.max) {
+    fields.note = `Please keep this under ${INPUT_LIMITS.note.max} characters.`;
+  }
+
+  const languageRaw = record['language'] ?? 'en';
   const language = (LANGUAGES as readonly unknown[]).includes(languageRaw)
     ? (languageRaw as Language)
     : null;
+  if (!language) fields.language = 'Please choose English or Hindi.';
 
-  const fields: Partial<Record<keyof ReviewInput, string>> = {};
-
-  const serviceError = checkLength(service, LIMITS.service, {
-    missing: 'Please tell us which service or product you used.',
-    short: 'Please describe the service in a few more letters.',
-    long: `Please keep this under ${LIMITS.service.max} characters.`,
-  });
-  if (serviceError) fields.service = serviceError;
-
-  const experienceError = checkLength(experience, LIMITS.experience, {
-    missing: 'Please describe your experience.',
-    short: 'Please write at least a sentence about your experience.',
-    long: `Please keep this under ${LIMITS.experience.max} characters.`,
-  });
-  if (experienceError) fields.experience = experienceError;
-
-  const detailsError = checkLength(details, LIMITS.details, {
-    missing: 'Details must be text.',
-    short: '',
-    long: `Please keep this under ${LIMITS.details.max} characters.`,
-  });
-  if (detailsError) fields.details = detailsError;
-
-  if (!language) fields.language = 'Please choose English, Hindi or "Same as I wrote".';
-
-  if (Object.keys(fields).length > 0 || !service || !experience || details === null || !language) {
-    return { ok: false, fields };
+  // Something real to write from: at least one tap, or a short sentence.
+  if (
+    !fields.liked &&
+    !fields.note &&
+    liked.length === 0 &&
+    (note ?? '').length < INPUT_LIMITS.noteAloneMin
+  ) {
+    fields.liked = 'Please tap at least one thing you liked, or write a short note.';
   }
+
+  if (Object.keys(fields).length > 0 || note === null || !language) return { ok: false, fields };
 
   return {
     ok: true,
-    value: {
-      service: redactContactDetails(service),
-      experience: redactContactDetails(experience),
-      details: redactContactDetails(details),
-      language,
-    },
+    value: { service, liked, note: redactContactDetails(note), language },
   };
 }

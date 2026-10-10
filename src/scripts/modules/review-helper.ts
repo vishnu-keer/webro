@@ -2,24 +2,17 @@ import { qs } from './dom';
 import { trackEvent } from './analytics';
 
 /**
- * Client side of the AI review helper (/review).
+ * Client side of the tap-to-review helper (/review).
  *
  * The browser only ever talks to our Cloudflare Worker, which holds the Gemini
- * key. Nothing here is a secret. The customer's text is sent once, for that
- * one draft, and is not stored or sent to analytics.
+ * key. Nothing here is a secret. The customer's choices are sent once, for
+ * that one review, and are never stored or sent to analytics.
  */
-
-type Field = 'service' | 'experience' | 'details';
-
-/** Mirrors worker/src/config.ts. The Worker re-checks everything. */
-const RULES: Record<Field, { min: number; max: number }> = {
-  service: { min: 2, max: 120 },
-  experience: { min: 10, max: 1500 },
-  details: { min: 0, max: 800 },
-};
 
 /** The Worker may try a backup model after a slow first attempt, so allow for both. */
 const REQUEST_TIMEOUT_MS = 45_000;
+const NOTE_ALONE_MIN = 10;
+const OTHER_MIN = 2;
 
 interface DraftResponse {
   status?: 'draft' | 'need_more';
@@ -27,40 +20,15 @@ interface DraftResponse {
   question?: string;
   error?: string;
   message?: string;
-  fields?: Partial<Record<Field, string>>;
+  fields?: Partial<Record<'service' | 'liked' | 'note' | 'language', string>>;
 }
 
-function setFieldError(form: HTMLFormElement, field: Field, message: string | null): boolean {
-  const control = form.querySelector<HTMLInputElement | HTMLTextAreaElement>(`[name="${field}"]`);
-  const wrapper = control?.closest<HTMLElement>('.field');
-  const error = wrapper?.querySelector<HTMLElement>('.field__error');
-  const invalid = message !== null;
-
-  wrapper?.setAttribute('data-invalid', String(invalid));
-  if (control) {
-    control.setAttribute('aria-invalid', String(invalid));
-    if (error) {
-      error.id ||= `${control.id}-error`;
-      control.setAttribute('aria-describedby', error.id);
-      if (message) error.textContent = message;
-    }
-  }
-  return !invalid;
-}
-
-function checkField(form: HTMLFormElement, field: Field): boolean {
-  const value = (form.elements.namedItem(field) as HTMLInputElement | null)?.value.trim() ?? '';
-  const { min, max } = RULES[field];
-  if (value.length > max)
-    return setFieldError(form, field, `Please keep this under ${max} characters.`);
-  if (value.length < min) {
-    const message =
-      field === 'service'
-        ? 'Please tell us which service or product you used.'
-        : 'Please write at least a sentence about your experience.';
-    return setFieldError(form, field, message);
-  }
-  return setFieldError(form, field, null);
+interface Payload {
+  service: string;
+  otherService: string;
+  liked: string[];
+  note: string;
+  language: string;
 }
 
 /** Copies text, falling back to a selection-based copy for older mobile browsers. */
@@ -97,7 +65,6 @@ export function initReviewHelper(): void {
   const copyButton = qs<HTMLButtonElement>('[data-review-copy]');
   const copyStatus = qs('[data-copy-status]');
   const openLink = qs<HTMLAnchorElement>('[data-review-open]');
-  const back = qs<HTMLButtonElement>('[data-review-back]');
   if (!draft) return;
 
   const say = (
@@ -114,11 +81,7 @@ export function initReviewHelper(): void {
 
   copyButton?.addEventListener('click', async () => {
     if (draft.value.trim() === '') {
-      say(
-        copyStatus,
-        'There is nothing to copy yet — write or generate your review first.',
-        'error',
-      );
+      say(copyStatus, 'There is nothing to copy yet — write your review first.', 'error');
       draft.focus();
       return;
     }
@@ -126,7 +89,7 @@ export function initReviewHelper(): void {
     if (copied) {
       say(
         copyStatus,
-        'Copied. Now open Google Reviews, paste it into the review box, check the text, choose your own rating and submit it yourself.',
+        'Copied ✓ Now tap "Open Google Reviews", paste it in the review box, check it, choose your own rating and post it.',
         'ok',
       );
       trackEvent('review_copied');
@@ -148,67 +111,108 @@ export function initReviewHelper(): void {
   const apiUrl = form?.dataset['apiUrl'] ?? '';
   if (!form || !apiUrl) return;
 
-  const showResult = (text: string): void => {
+  const otherWrap = qs('[data-other-wrap]', form);
+  const otherInput = qs<HTMLInputElement>('#review-other', form);
+
+  const setStepError = (step: 'service' | 'liked', message: string | null): void => {
+    const fieldset = form.querySelector<HTMLElement>(`[data-step="${step}"]`);
+    const error = form.querySelector<HTMLElement>(`[data-error-for="${step}"]`);
+    fieldset?.setAttribute('data-invalid', String(message !== null));
+    if (!error) return;
+    error.hidden = message === null;
+    if (message) error.textContent = message;
+    error.id ||= `review-${step}-error`;
+    fieldset?.setAttribute('aria-describedby', error.id);
+  };
+
+  const read = (): Payload => {
+    const data = new FormData(form);
+    return {
+      service: String(data.get('service') ?? ''),
+      otherService: String(data.get('otherService') ?? '').trim(),
+      liked: data.getAll('liked').map(String),
+      note: String(data.get('note') ?? '').trim(),
+      language: String(data.get('language') ?? 'en'),
+    };
+  };
+
+  const validate = (payload: Payload): boolean => {
+    let ok = true;
+    if (!payload.service) {
+      setStepError('service', 'Please choose what we did for you.');
+      ok = false;
+    } else if (payload.service === 'Other' && payload.otherService.length < OTHER_MIN) {
+      setStepError('service', 'Please type which service we did for you.');
+      ok = false;
+    } else {
+      setStepError('service', null);
+    }
+    if (payload.liked.length === 0 && payload.note.length < NOTE_ALONE_MIN) {
+      setStepError(
+        'liked',
+        'Please tap at least one thing you liked, or write a short note below.',
+      );
+      ok = false;
+    } else {
+      setStepError('liked', null);
+    }
+    return ok;
+  };
+
+  // Live feedback: show "Other" input, clear errors as soon as they are fixed.
+  form.addEventListener('change', (event) => {
+    const target = event.target as HTMLInputElement;
+    if (target.name === 'service') {
+      const isOther = target.value === 'Other';
+      if (otherWrap) otherWrap.hidden = !isOther;
+      if (isOther) otherInput?.focus();
+    }
+    if (form.querySelector('[data-invalid="true"]')) validate(read());
+  });
+  form.addEventListener('input', () => {
+    if (form.querySelector('[data-invalid="true"]')) validate(read());
+  });
+
+  let busy = false;
+  let lastPayload: Payload | null = null;
+  const regenerate = qs<HTMLButtonElement>('[data-review-regenerate]');
+  const back = qs<HTMLButtonElement>('[data-review-back]');
+
+  const setBusy = (value: boolean): void => {
+    busy = value;
+    form.setAttribute('aria-busy', String(value));
+    if (generate) {
+      generate.disabled = value;
+      generate.textContent = value ? 'Writing your review…' : 'Write my review';
+    }
+    if (regenerate) {
+      regenerate.disabled = value;
+      regenerate.textContent = value ? 'Writing…' : '↻ Write it differently';
+    }
+  };
+
+  const showResult = (text: string, language: string): void => {
     draft.value = text;
-    draft.lang =
-      (form.elements.namedItem('language') as HTMLSelectElement | null)?.value === 'hi' ? 'hi' : '';
+    draft.lang = language === 'hi' ? 'hi' : '';
     aiNotice?.removeAttribute('hidden');
     say(copyStatus, '');
     form.hidden = true;
     result.hidden = false;
-    draft.focus();
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    draft.focus({ preventScroll: true });
   };
 
-  back?.addEventListener('click', () => {
+  const showForm = (message = '', tone: 'info' | 'error' = 'info'): void => {
     result.hidden = true;
     form.hidden = false;
-    say(status, '');
-    qs<HTMLTextAreaElement>('#review-experience')?.focus();
-  });
-
-  for (const field of Object.keys(RULES) as Field[]) {
-    const control = form.elements.namedItem(field) as HTMLElement | null;
-    control?.addEventListener('blur', () => {
-      if ((control as HTMLInputElement).value.trim() !== '') checkField(form, field);
-    });
-    control?.addEventListener('input', () => {
-      if (control.closest('.field')?.getAttribute('data-invalid') === 'true')
-        checkField(form, field);
-    });
-  }
-
-  let busy = false;
-  const setBusy = (value: boolean): void => {
-    busy = value;
-    if (!generate) return;
-    generate.disabled = value;
-    generate.textContent = value ? 'Preparing your draft…' : 'Generate Review Draft';
-    form.setAttribute('aria-busy', String(value));
+    say(status, message, tone);
   };
 
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
+  const request = async (payload: Payload): Promise<void> => {
     if (busy) return;
-
-    const checks = (Object.keys(RULES) as Field[]).map((field) => checkField(form, field));
-    if (!checks.every(Boolean)) {
-      form
-        .querySelector<HTMLElement>('[data-invalid="true"] input, [data-invalid="true"] textarea')
-        ?.focus();
-      return;
-    }
-
-    const read = (name: string): string =>
-      (form.elements.namedItem(name) as HTMLInputElement | null)?.value.trim() ?? '';
-    const payload = {
-      service: read('service'),
-      experience: read('experience'),
-      details: read('details'),
-      language: read('language') || 'auto',
-    };
-
     setBusy(true);
-    say(status, 'Preparing your draft…');
+    say(status, 'Writing your review…');
+    say(copyStatus, result.hidden ? '' : 'Writing a new version…');
 
     try {
       const response = await fetch(apiUrl, {
@@ -222,43 +226,57 @@ export function initReviewHelper(): void {
 
       if (response.ok && data.status === 'draft' && data.draft) {
         say(status, '');
-        showResult(data.draft);
+        showResult(data.draft, payload.language);
         trackEvent('review_draft_generated');
         return;
       }
 
       if (response.ok && data.status === 'need_more' && data.question) {
-        say(
-          status,
-          `${data.question} Please add a little more detail above and try again.`,
-          'info',
-        );
-        qs<HTMLTextAreaElement>('#review-details')?.focus();
+        showForm(`${data.question} Tap a few more options or add a short note, then try again.`);
         return;
       }
 
       if (response.status === 400 && data.fields) {
-        for (const [field, message] of Object.entries(data.fields)) {
-          if (field in RULES && message) setFieldError(form, field as Field, message);
-        }
-        say(status, 'Please check the highlighted fields.', 'error');
+        if (data.fields.service) setStepError('service', data.fields.service);
+        if (data.fields.liked) setStepError('liked', data.fields.liked);
+        showForm('Please check the highlighted step.', 'error');
         return;
       }
 
-      say(
-        status,
+      const message =
         data.message ??
-          'The AI helper is unavailable right now. You can still write your review directly on Google.',
-        'error',
-      );
+        'The AI helper is unavailable right now. You can still write your review directly on Google.';
+      if (result.hidden) say(status, message, 'error');
+      else say(copyStatus, message, 'error');
     } catch {
-      say(
-        status,
-        'Could not reach the AI helper. Check your connection and try again, or write your review directly on Google.',
-        'error',
-      );
+      const message =
+        'Could not reach the AI helper. Check your connection and try again, or write your review directly on Google.';
+      if (result.hidden) say(status, message, 'error');
+      else say(copyStatus, message, 'error');
     } finally {
       setBusy(false);
     }
+  };
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const payload = read();
+    if (!validate(payload)) {
+      form
+        .querySelector<HTMLElement>('[data-invalid="true"]')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    lastPayload = payload;
+    void request(payload);
+  });
+
+  regenerate?.addEventListener('click', () => {
+    if (lastPayload) void request(lastPayload);
+  });
+
+  back?.addEventListener('click', () => {
+    showForm();
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 }

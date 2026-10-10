@@ -23,7 +23,7 @@ import '@styles/main.scss';
 
 type Props = SeoProps;
 
-const { title, description, keywords, indexable = true, background } = Astro.props;
+const { title, description, keywords, indexable = true, background, floatingActions = true } = Astro.props;
 
 /**
  * build.format 'file' makes Astro see paths as /services.html, but the site
@@ -207,8 +207,8 @@ const breadcrumbSchema =
     </main>
     <Footer />
 
-    <QuickActions />
-    <ChatWidget />
+    {floatingActions && <QuickActions />}
+    {floatingActions && <ChatWidget />}
 
     <script>
       import '@scripts/main';

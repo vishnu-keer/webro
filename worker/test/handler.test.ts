@@ -21,9 +21,9 @@ function env(overrides: Partial<Env> = {}): Env {
 }
 
 const goodBody = {
-  service: 'Website development',
-  experience: 'They built our cafe website in two weeks and replied quickly on WhatsApp.',
-  details: 'Menu page could load faster.',
+  service: 'Website',
+  liked: ['Fast delivery', 'Great design'],
+  note: 'Menu page could load faster.',
   language: 'en',
 };
 
@@ -115,7 +115,7 @@ describe('routing and CORS', () => {
 describe('limits and validation', () => {
   it('rejects bodies over 8 KB', async () => {
     const res = await handleRequest(
-      post(null, { raw: JSON.stringify({ ...goodBody, experience: 'x'.repeat(9000) }) }),
+      post(null, { raw: JSON.stringify({ ...goodBody, note: 'x'.repeat(9000) }) }),
       env(),
       deps(vi.fn()),
     );
@@ -143,14 +143,14 @@ describe('limits and validation', () => {
   it('rejects empty input with field messages and never calls Gemini', async () => {
     const generate = vi.fn();
     const res = await handleRequest(
-      post({ service: '', experience: '', language: 'en' }),
+      post({ service: '', liked: [], note: '', language: 'en' }),
       env(),
       deps(generate),
     );
     expect(res.status).toBe(400);
     const body = (await res.json()) as { fields: Record<string, string> };
     expect(body.fields.service).toBeTruthy();
-    expect(body.fields.experience).toBeTruthy();
+    expect(body.fields.liked).toBeTruthy();
     expect(generate).not.toHaveBeenCalled();
   });
 
@@ -193,8 +193,9 @@ describe('generation', () => {
     const generate = vi.fn(async () => ({ status: 'draft' as const, draft: 'ठीक' }));
     await handleRequest(
       post({
-        service: 'वेबसाइट',
-        experience: 'वेबसाइट समय पर बनी, पर बदलाव में देर लगी।',
+        service: 'Website',
+        liked: ['Fast delivery'],
+        note: 'वेबसाइट समय पर बनी, पर बदलाव में देर लगी।',
         language: 'hi',
       }),
       env(),
@@ -202,7 +203,7 @@ describe('generation', () => {
     );
     expect(generate).toHaveBeenCalledWith(
       expect.objectContaining({
-        experience: 'वेबसाइट समय पर बनी, पर बदलाव में देर लगी।',
+        note: 'वेबसाइट समय पर बनी, पर बदलाव में देर लगी।',
         language: 'hi',
       }),
     );
@@ -238,7 +239,7 @@ describe('generation', () => {
       draft: 'UNIQUE-DRAFT-MARKER',
     }));
     await handleRequest(
-      post({ ...goodBody, experience: 'UNIQUE-INPUT-MARKER and a full sentence.' }),
+      post({ ...goodBody, note: 'UNIQUE-INPUT-MARKER and a full sentence.' }),
       env(),
       deps(generate),
     );

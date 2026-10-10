@@ -75,6 +75,8 @@ export interface SeoProps {
   /** Set false for legal and error pages. */
   readonly indexable?: boolean;
   readonly background?: BackgroundScene;
+  /** Floating chat/WhatsApp/call buttons. Off on focused task pages like /review. */
+  readonly floatingActions?: boolean;
 }
 
 /** One topic the chat assistant can answer. */

@@ -24,16 +24,17 @@ The customer then copies the draft, opens the official Google review link, paste
 |---|---|
 | `src/index.ts` | Entry point. Reads `GEMINI_API_KEY` server-side and wires the handler. |
 | `src/handler.ts` | HTTP layer: CORS allow-list, method and content-type checks, body-size limit, rate limits, error mapping, safe logging. |
-| `src/validate.ts` | Server-side validation, cleanup, and removal of emails and phone numbers before anything is sent to Gemini. |
+| `src/options.ts` | The services and "what you liked" choices. Shared with the website so buttons and validation never drift. |
+| `src/validate.ts` | Server-side validation (only listed choices accepted), cleanup, and removal of emails and phone numbers before anything is sent to Gemini. |
 | `src/prompt.ts` | The honesty rules (system instruction), prompt builder, JSON output schema and parser. |
 | `src/gemini.ts` | `@google/genai` call: text only, temperature 0.3, max 1024 output tokens, lowest thinking level each model accepts, 12 s timeout per model, automatic backup model. |
 | `src/config.ts` | All limits in one place. |
-| `test/` | 27 Vitest tests covering validation, CORS, limits, all error paths and log hygiene. |
+| `test/` | 29 Vitest tests covering validation, CORS, limits, all error paths and log hygiene. |
 
 ### Protection and cost controls
 
 - **Rate limits** (Cloudflare Rate Limiting binding): 5 drafts per minute per IP, plus a ceiling of 10 per minute for the whole site. Both are configured in `wrangler.toml`.
-- **Body limit:** 8 KB. **Field limits:** service 120, experience 1,500, details 800 characters. **Output:** at most 1,024 tokens, and the draft is cut to 1,200 characters.
+- **Body limit:** 8 KB. **Field limits:** only listed services and choices are accepted, "Other" service 60 characters, note 600 characters. **Output:** at most 1,024 tokens, and the draft is cut to 1,200 characters.
 - **CORS allow-list:** only `webro.studio` and local dev can call it from a browser.
 - **No storage:** nothing is written to a database or KV.
 - **Logs** contain only an event name, an error kind, an HTTP status and a duration. Review text, drafts and the key are never logged, and a test enforces this.
@@ -58,7 +59,7 @@ Quick API test, in a second terminal:
 ```bash
 curl -s -X POST http://localhost:8787/draft \
   -H 'Origin: http://localhost:4321' -H 'Content-Type: application/json' \
-  -d '{"service":"Website","experience":"They built our cafe site in two weeks but missed one deadline.","language":"en"}'
+  -d '{"service":"Website","liked":["Fast delivery","Great design"],"note":"They missed one deadline.","language":"en"}'
 ```
 
 To test the page against the local Worker, temporarily set `review.apiUrl` in `src/data/site.ts` to `http://localhost:8787/draft`. Then run `npm run dev` in the site root and open `http://localhost:4321/review`. Do not commit that local URL.

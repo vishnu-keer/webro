@@ -1,42 +1,43 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
-import SectionHeader from '@components/ui/SectionHeader.astro';
 import { site } from '@/data/site';
+// One list shared with the Worker, so the buttons and the validation never drift.
+import { INPUT_LIMITS, LIKED, SERVICES } from '../../worker/src/options';
 
 /**
- * AI review helper.
+ * Tap-to-review helper.
  *
- * A separate page that helps a customer put their own experience into words,
- * then sends them to Google to paste, rate and post it themselves. Nothing is
+ * Customers tap what we did and what they liked, optionally add a line, and
+ * the AI writes a polished review from exactly those choices. They then copy
+ * it, open Google, choose their own rating and post it themselves. Nothing is
  * posted automatically and no rating is ever chosen for them.
- *
- * Limits mirror worker/src/config.ts — the Worker re-validates everything.
  */
 const { googleReviewUrl, apiUrl, geminiTier } = site.review;
 const aiEnabled = apiUrl !== '';
 
 const privacyNotice =
   geminiTier === 'free'
-    ? "When you press Generate, the text you typed is sent to Google's Gemini AI to prepare the draft. This uses the Gemini API free tier: Google may use the text to improve its products, and trained reviewers may read it. Please don't include names, phone numbers or other personal details. We don't store what you write."
-    : "When you press Generate, the text you typed is sent to Google's Gemini AI to prepare the draft. Under the paid Gemini API terms, Google does not use it to improve its products. Please don't include names, phone numbers or other personal details. We don't store what you write.";
+    ? "Your choices and note are sent to Google's Gemini AI to write the review (free tier: Google may use them to improve its products, and reviewers may read them). Don't include names or phone numbers. We store nothing."
+    : "Your choices and note are sent to Google's Gemini AI to write the review. Google does not use them to improve its products. Don't include names or phone numbers. We store nothing.";
 ---
 
 <BaseLayout
-  title="Share Your Experience — WEBRO Studio"
-  description="Leave a Google review for WEBRO Studio. An optional AI helper turns your own notes into a clear draft you can edit before posting."
+  title="Review WEBRO Studio — Share Your Experience"
+  description="Leave a Google review for WEBRO Studio in under a minute. Tap what we did, tap what you liked, and get a ready-to-post review."
   indexable={false}
+  floatingActions={false}
 >
   <div class="container review">
-    <div class="page-head">
-      <SectionHeader
-        level={1}
-        eyebrow={site.name}
-        title="Share Your Experience"
-        description="Tell us what actually happened, in your own words. AI only helps tidy the wording — it keeps your meaning and your opinion, good or bad."
-      />
-    </div>
+    <header class="review__head">
+      <span class="eyebrow">{site.name}</span>
+      <h1>Share Your Experience</h1>
+      <p>
+        Takes under a minute. Tap a few options — AI turns your choices into a clear, professional
+        review you can post on Google.
+      </p>
+    </header>
 
-    <section class="section review__body" style="padding-block-start:0">
+    <section class="review__body">
       <form
         class="panel review__panel"
         data-review-form
@@ -45,80 +46,104 @@ const privacyNotice =
         hidden={!aiEnabled}
         aria-describedby="review-privacy"
       >
-        <div class="field" data-invalid="false">
-          <label for="review-service">What service or product did you use?</label>
-          <input
-            id="review-service"
-            name="service"
-            type="text"
-            maxlength="120"
-            autocomplete="off"
-            placeholder="e.g. Website, Menu QR, Instagram handling"
-            required
-          />
-          <span class="field__error" data-error-for="service"
-            >Please tell us which service or product you used.</span
+        <fieldset class="review__step" data-step="service">
+          <legend
+            ><span class="review__num" aria-hidden="true">1</span>What did we do for you?</legend
           >
-        </div>
+          <div class="review__chips">
+            {
+              SERVICES.map((service, i) => (
+                <label class="pick">
+                  <input type="radio" name="service" value={service} required={i === 0} />
+                  <span>{service}</span>
+                </label>
+              ))
+            }
+          </div>
+          <div class="field review__other" data-other-wrap hidden>
+            <label for="review-other">Which service?</label>
+            <input
+              id="review-other"
+              name="otherService"
+              type="text"
+              maxlength={INPUT_LIMITS.otherService.max}
+              autocomplete="off"
+              placeholder="e.g. Brochure design"
+            />
+          </div>
+          <p class="review__error" data-error-for="service" hidden>
+            Please choose what we did for you.
+          </p>
+        </fieldset>
 
-        <div class="field" data-invalid="false">
-          <label for="review-experience">Describe your experience</label>
-          <textarea
-            id="review-experience"
-            name="experience"
-            rows="5"
-            maxlength="1500"
-            placeholder="What happened, and how did you feel about it? Good, bad or mixed — be honest."
-            required></textarea>
-          <span class="field__error" data-error-for="experience"
-            >Please write at least a sentence about your experience.</span
+        <fieldset class="review__step" data-step="liked">
+          <legend
+            ><span class="review__num" aria-hidden="true">2</span>What did you like? <small
+              >Tap all that are true</small
+            ></legend
           >
-        </div>
+          <div class="review__chips">
+            {
+              LIKED.map((point) => (
+                <label class="pick pick--check">
+                  <input type="checkbox" name="liked" value={point} />
+                  <span>{point}</span>
+                </label>
+              ))
+            }
+          </div>
+          <p class="review__error" data-error-for="liked" hidden>
+            Please tap at least one thing you liked, or write a short note below.
+          </p>
+        </fieldset>
 
-        <div class="field" data-invalid="false">
-          <label for="review-details"
-            >Specific details <span class="review__optional">(optional)</span></label
+        <fieldset class="review__step">
+          <legend
+            ><span class="review__num" aria-hidden="true">3</span>Anything to add? <small
+              >Optional</small
+            ></legend
           >
-          <textarea
-            id="review-details"
-            name="details"
-            rows="3"
-            maxlength="800"
-            placeholder="What went well? What could be improved?"></textarea>
-          <span class="field__error" data-error-for="details"
-            >Please keep this under 800 characters.</span
-          >
-        </div>
+          <div class="field">
+            <label class="visually-hidden" for="review-note">Anything to add</label>
+            <textarea
+              id="review-note"
+              name="note"
+              rows="3"
+              maxlength={INPUT_LIMITS.note.max}
+              placeholder="A result, a detail, or something we could do better"></textarea>
+          </div>
+        </fieldset>
 
-        <div class="field">
-          <label for="review-language"
-            >Draft language <span class="review__optional">(optional)</span></label
-          >
-          <select id="review-language" name="language">
-            <option value="auto">Same as I wrote</option>
-            <option value="en">English</option>
-            <option value="hi" lang="hi">हिन्दी (Hindi)</option>
-          </select>
-        </div>
+        <fieldset class="review__step review__step--lang">
+          <legend>Review language</legend>
+          <div class="review__chips">
+            <label class="pick"
+              ><input type="radio" name="language" value="en" checked /><span>English</span></label
+            >
+            <label class="pick"
+              ><input type="radio" name="language" value="hi" /><span lang="hi">हिन्दी</span></label
+            >
+          </div>
+        </fieldset>
 
-        <p class="review__note" id="review-privacy">{privacyNotice}</p>
-
-        <button class="btn btn--primary btn--block" type="submit" data-review-generate
-          >Generate Review Draft</button
-        >
+        <button class="btn btn--primary btn--block review__go" type="submit" data-review-generate>
+          Write my review
+        </button>
 
         <div class="review__status" data-review-status role="status" aria-live="polite"></div>
+
+        <p class="review__note" id="review-privacy">{privacyNotice}</p>
       </form>
 
       <div class="panel review__panel review__result" data-review-result hidden={aiEnabled}>
         <div class="field">
           <label for="review-draft" data-draft-label>
-            {aiEnabled ? 'Your draft — edit it freely' : 'Write your review'}
+            {aiEnabled ? 'Your review — edit anything you like' : 'Write your review'}
           </label>
           <textarea
             id="review-draft"
             name="draft"
-            rows="7"
+            rows="9"
             maxlength="4000"
             placeholder="Write about your experience in your own words."></textarea>
         </div>
@@ -129,7 +154,7 @@ const privacyNotice =
         </p>
 
         <div class="review__actions">
-          <button class="btn btn--primary" type="button" data-review-copy>Copy Review</button>
+          <button class="btn btn--primary" type="button" data-review-copy>1. Copy Review</button>
           <a
             class="btn btn--ghost"
             href={googleReviewUrl}
@@ -137,31 +162,35 @@ const privacyNotice =
             rel="noopener"
             data-review-open
           >
-            Open Google Reviews
+            2. Open Google Reviews
           </a>
         </div>
 
         <div class="review__copy-status" data-copy-status role="status" aria-live="polite"></div>
 
-        <ol class="review__steps">
-          <li>Tap <strong>Copy Review</strong>.</li>
-          <li>Tap <strong>Open Google Reviews</strong>.</li>
-          <li>Paste the text into Google's review box and check it.</li>
-          <li>Choose your own star rating and submit it yourself.</li>
-        </ol>
+        <p class="review__howto">
+          On Google: paste the text, check it, choose your own star rating and tap <strong
+            >Post</strong
+          >.
+        </p>
 
         {
           aiEnabled && (
-            <button class="review__back" type="button" data-review-back>
-              ← Change my answers
-            </button>
+            <div class="review__more">
+              <button class="review__back" type="button" data-review-regenerate>
+                ↻ Write it differently
+              </button>
+              <button class="review__back" type="button" data-review-back>
+                ← Change my answers
+              </button>
+            </div>
           )
         }
       </div>
 
       <p class="review__direct">
-        Prefer to skip all this? <a href={googleReviewUrl} target="_blank" rel="noopener"
-          >Write your review directly on Google</a
+        Prefer to write it yourself? <a href={googleReviewUrl} target="_blank" rel="noopener"
+          >Go straight to Google</a
         >.
       </p>
     </section>

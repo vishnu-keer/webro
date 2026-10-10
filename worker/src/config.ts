@@ -2,9 +2,6 @@
 export const LIMITS = {
   /** Largest request body accepted, in bytes. Real submissions are ~1–3 KB. */
   maxBodyBytes: 8 * 1024,
-  service: { min: 2, max: 120 },
-  experience: { min: 10, max: 1500 },
-  details: { min: 0, max: 800 },
   /** Draft returned to the browser is cut to this many characters. */
   maxDraftChars: 1200,
   maxQuestionChars: 300,
@@ -13,9 +10,6 @@ export const LIMITS = {
   /** Each Gemini call is abandoned after this long (primary, then backup). */
   upstreamTimeoutMs: 12_000,
 } as const;
-
-export const LANGUAGES = ['auto', 'en', 'hi'] as const;
-export type Language = (typeof LANGUAGES)[number];
 
 export const BUSINESS_NAME = 'WEBRO Studio';
 

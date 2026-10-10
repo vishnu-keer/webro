@@ -1,24 +1,38 @@
 @use '../abstracts' as *;
 
-// AI review helper (/review). Reuses .panel, .field and .btn; only layout and
-// the notices are specific to this page.
+// Tap-to-review page (/review). Reuses .panel, .field and .btn; the chips,
+// steps and notices are specific to this page.
 
 .review {
-  .page-head {
-    max-width: 40rem;
-    margin-inline: auto;
+  max-width: 44rem;
+
+  &__head {
+    padding: space('xl') 0 space('lg');
     text-align: center;
-  }
-  .page-head p {
-    margin-inline: auto;
+
+    @include below('md') {
+      padding: space('lg') 0 space('md');
+    }
+
+    h1 {
+      margin-top: space('xs');
+      font-size: clamp(2rem, 6vw, 3rem);
+    }
+
+    p {
+      max-width: 34rem;
+      margin: space('sm') auto 0;
+      color: palette('ink-soft');
+      font-size: 1.02rem;
+      line-height: 1.55;
+    }
   }
 
   &__body {
-    max-width: 40rem;
-    margin-inline: auto;
+    padding-bottom: space('2xl');
   }
 
-  // .panel.review__panel: beats .panel (centred, roomy), which loads later.
+  // .panel.review__panel beats .panel (centred, roomy), which loads later.
   &__panel.panel {
     text-align: left;
     padding: 1.75rem;
@@ -29,19 +43,85 @@
 
     textarea {
       resize: vertical;
-      min-height: 6rem;
-      line-height: 1.5;
+      min-height: 5rem;
+      line-height: 1.55;
     }
   }
 
-  &__optional {
-    font-weight: 400;
-    color: palette('ink-soft');
+  &__step {
+    margin: 0 0 space('lg');
+    padding: 0;
+    border: 0;
+
+    legend {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: space('sm');
+      padding: 0;
+      font-family: $font-display;
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: palette('ink');
+
+      small {
+        font-family: $font-body;
+        font-weight: 400;
+        font-size: 0.82rem;
+        color: palette('ink-soft');
+      }
+    }
+
+    .field {
+      margin-bottom: 0;
+    }
+  }
+
+  &__step--lang legend {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  &__num {
+    display: inline-grid;
+    place-items: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    background: palette('lime-deep');
+    color: #fff;
+    font-size: 0.82rem;
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  &__other {
+    margin-top: space('sm');
+  }
+
+  &__error {
+    margin: space('xs') 0 0;
+    font-size: 0.85rem;
+    color: palette('danger');
+  }
+
+  &__step[data-invalid='true'] .pick span {
+    border-color: rgba(192, 73, 47, 0.45);
+  }
+
+  &__go {
+    min-height: 54px;
+    font-size: 1.02rem;
   }
 
   &__note {
-    margin: 0 0 space('md');
-    font-size: 0.82rem;
+    margin: space('md') 0 0;
+    font-size: 0.78rem;
     line-height: 1.5;
     color: palette('ink-soft');
   }
@@ -71,12 +151,12 @@
     border: 1px solid $hairline;
     border-radius: $radius-sm;
     background: rgba(194, 217, 138, 0.18);
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     line-height: 1.5;
     color: palette('ink');
   }
 
-  // Two separate actions, side by side on wide screens, stacked on phones.
+  // Two separate actions: side by side on wide screens, stacked on phones.
   &__actions {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -88,19 +168,25 @@
 
     .btn {
       width: 100%;
+      min-height: 52px;
     }
   }
 
-  &__steps {
+  &__howto {
     margin: space('md') 0 0;
-    padding-left: 1.25rem;
     font-size: 0.9rem;
-    line-height: 1.6;
+    line-height: 1.55;
     color: palette('ink-soft');
   }
 
-  &__back {
+  &__more {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space('md');
     margin-top: space('md');
+  }
+
+  &__back {
     padding: 0.5rem 0;
     border: 0;
     background: none;
@@ -127,5 +213,59 @@
 
   [hidden] {
     display: none !important;
+  }
+}
+
+// Tap targets: real radio/checkbox inputs (keyboard and screen-reader friendly)
+// styled as pills. Min height 44px for comfortable thumbs.
+.pick {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+
+  input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 44px;
+    padding: 0.55rem 0.95rem;
+    border: 1px solid $hairline;
+    border-radius: 999px;
+    background: palette('cream');
+    color: palette('ink');
+    font-size: 0.92rem;
+    line-height: 1.2;
+    transition:
+      background 0.15s,
+      border-color 0.15s,
+      color 0.15s;
+  }
+
+  &:hover span {
+    border-color: palette('lime-mid');
+  }
+
+  input:focus-visible + span {
+    outline: 2px solid palette('lime-deep');
+    outline-offset: 2px;
+  }
+
+  input:checked + span {
+    border-color: palette('lime-deep');
+    background: palette('lime-deep');
+    color: #fff;
+  }
+
+  &--check input:checked + span::before {
+    content: '✓';
+    font-weight: 700;
   }
 }
