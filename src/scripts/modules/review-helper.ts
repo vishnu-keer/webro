@@ -18,7 +18,8 @@ const RULES: Record<Field, { min: number; max: number }> = {
   details: { min: 0, max: 800 },
 };
 
-const REQUEST_TIMEOUT_MS = 25_000;
+/** The Worker may try a backup model after a slow first attempt, so allow for both. */
+const REQUEST_TIMEOUT_MS = 45_000;
 
 interface DraftResponse {
   status?: 'draft' | 'need_more';

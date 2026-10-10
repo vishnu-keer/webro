@@ -26,9 +26,9 @@ The customer then copies the draft, opens the official Google review link, paste
 | `src/handler.ts` | HTTP layer: CORS allow-list, method and content-type checks, body-size limit, rate limits, error mapping, safe logging. |
 | `src/validate.ts` | Server-side validation, cleanup, and removal of emails and phone numbers before anything is sent to Gemini. |
 | `src/prompt.ts` | The honesty rules (system instruction), prompt builder, JSON output schema and parser. |
-| `src/gemini.ts` | `@google/genai` call: text only, temperature 0.3, max 1024 output tokens, minimal thinking, 15 s timeout. |
+| `src/gemini.ts` | `@google/genai` call: text only, temperature 0.3, max 1024 output tokens, lowest thinking level each model accepts, 12 s timeout per model, automatic backup model. |
 | `src/config.ts` | All limits in one place. |
-| `test/` | 25 Vitest tests covering validation, CORS, limits, all error paths and log hygiene. |
+| `test/` | 27 Vitest tests covering validation, CORS, limits, all error paths and log hygiene. |
 
 ### Protection and cost controls
 
@@ -86,6 +86,8 @@ To test the page against the local Worker, temporarily set `review.apiUrl` in `s
 | Change | Where |
 |---|---|
 | Gemini model | `GEMINI_MODEL` in `wrangler.toml`, then `npm run deploy` |
+| Backup model (used only if the main one times out, is overloaded or out of quota) | `GEMINI_FALLBACK_MODEL` in `wrangler.toml` |
+| Check the key and models from your Mac | `GEMINI_API_KEY=... node scripts/diagnose.mjs` |
 | Rotate the key | `npx wrangler secret put GEMINI_API_KEY` |
 | Rate limits | `[[ratelimits]]` in `wrangler.toml` |
 | Google review link | `review.googleReviewUrl` in `src/data/site.ts` (not a secret) |

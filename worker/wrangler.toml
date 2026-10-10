@@ -11,12 +11,19 @@ name = "webro-review-api"
 main = "src/index.ts"
 compatibility_date = "2026-10-01"
 
+# Public URL: https://webro-review-api.webro-review-helper.workers.dev
+workers_dev = true
+# No per-version preview URLs — one public endpoint only.
+preview_urls = false
+
 # Never ship source maps — they are not needed and would reveal source.
 upload_source_maps = false
 
 [vars]
 # Model is configurable without a code change.
 GEMINI_MODEL = "gemini-3.8-flash"
+# Used automatically only if the main model times out, is overloaded or out of quota.
+GEMINI_FALLBACK_MODEL = "gemini-2.5-flash"
 # Only these sites may call the API from a browser. Comma-separated.
 ALLOWED_ORIGINS = "https://webro.studio,https://www.webro.studio,http://localhost:4321"
 

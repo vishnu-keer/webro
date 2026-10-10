@@ -64,7 +64,7 @@ export const site = {
      * never does). Leave empty until deployed: the page then skips the AI step
      * and still lets customers write and post their own review.
      */
-    apiUrl: '',
+    apiUrl: 'https://webro-review-api.webro-review-helper.workers.dev/draft' as string,
     /**
      * Must match the Gemini API tier of the key in the Worker. The free tier
      * lets Google use submitted text to improve its products; paid does not.

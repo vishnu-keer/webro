@@ -10,8 +10,8 @@ export const LIMITS = {
   maxQuestionChars: 300,
   /** Token ceiling sent to Gemini — bounds cost per request. */
   maxOutputTokens: 1024,
-  /** Gemini call is abandoned after this long. */
-  upstreamTimeoutMs: 15_000,
+  /** Each Gemini call is abandoned after this long (primary, then backup). */
+  upstreamTimeoutMs: 12_000,
 } as const;
 
 export const LANGUAGES = ['auto', 'en', 'hi'] as const;
@@ -22,6 +22,8 @@ export const BUSINESS_NAME = 'WEBRO Studio';
 export interface Env {
   GEMINI_API_KEY?: string;
   GEMINI_MODEL?: string;
+  /** Tried automatically if the main model times out, is overloaded or out of quota. */
+  GEMINI_FALLBACK_MODEL?: string;
   ALLOWED_ORIGINS?: string;
   PER_IP_LIMITER?: RateLimit;
   GLOBAL_LIMITER?: RateLimit;

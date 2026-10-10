@@ -141,6 +141,7 @@ export async function handleRequest(request: Request, env: Env, deps: Deps): Pro
     logEvent('draft_failed', {
       kind: failure.kind,
       upstreamStatus: failure.status,
+      reason: failure.reason,
       ms: Date.now() - started,
     });
     const status = failure.kind === 'quota' ? 503 : failure.kind === 'timeout' ? 504 : 502;

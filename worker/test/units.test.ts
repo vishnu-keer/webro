@@ -1,6 +1,6 @@
 import { ApiError } from '@google/genai';
 import { describe, expect, it } from 'vitest';
-import { toDraftError } from '../src/gemini';
+import { DraftError, shouldTryNextModel, thinkingFor, toDraftError } from '../src/gemini';
 import { SYSTEM_INSTRUCTION, buildUserPrompt, parseModelOutput } from '../src/prompt';
 import { clean, redactContactDetails, validateInput } from '../src/validate';
 
@@ -100,5 +100,22 @@ describe('toDraftError', () => {
     abort.name = 'AbortError';
     expect(toDraftError(abort).kind).toBe('timeout');
     expect(toDraftError(new Error('fetch failed')).kind).toBe('upstream');
+  });
+});
+
+describe('model selection', () => {
+  it('uses the lowest thinking setting each model family accepts', () => {
+    expect(thinkingFor('gemini-3.8-flash')).toEqual({ thinkingLevel: 'LOW' });
+    expect(thinkingFor('gemini-2.5-flash')).toEqual({ thinkingBudget: 0 });
+  });
+
+  it('falls back on timeouts, overload, unknown model and quota — not on bad input', () => {
+    expect(shouldTryNextModel(new DraftError('timeout'))).toBe(true);
+    expect(shouldTryNextModel(new DraftError('quota', 429))).toBe(true);
+    expect(shouldTryNextModel(new DraftError('upstream', 504))).toBe(true);
+    expect(shouldTryNextModel(new DraftError('upstream', 503))).toBe(true);
+    expect(shouldTryNextModel(new DraftError('upstream', 404))).toBe(true);
+    expect(shouldTryNextModel(new DraftError('upstream', 400))).toBe(false);
+    expect(shouldTryNextModel(new DraftError('upstream', 403))).toBe(false);
   });
 });
