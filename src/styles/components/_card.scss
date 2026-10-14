@@ -96,8 +96,9 @@
   &__image {
     width: 100%;
     height: auto;
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 16 / 9;
     object-fit: cover;
+    object-position: top center; // keep each site's header and hero in view
     border-radius: $radius-sm;
     margin-bottom: space('md');
   }

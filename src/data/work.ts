@@ -12,7 +12,7 @@ import type { CaseStudy } from '@/types';
  * soon as the client shares figures — enquiries, bookings, orders, traffic.
  *
  * TO ADD A SCREENSHOT
- *   Save it to  public/assets/work/<slug>.jpg  (1600×1000), then set `image`.
+ *   Save it to  public/assets/work/<slug>.jpg  (1600×900, a 16:9 desktop screenshot), then set `image`.
  *   Without one, the card renders a branded panel instead of a broken image.
  */
 export const caseStudies: readonly CaseStudy[] = [

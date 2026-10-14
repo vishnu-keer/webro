@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Captures 1600×1000 homepage screenshots for the Work page, on macOS.
+# Captures 1600×900 homepage screenshots for the Work page, on macOS.
 # Uses the Google Chrome you already have — nothing to install.
 #
 #   bash scripts/capture-work.sh
@@ -21,7 +21,7 @@ capture() {
   echo "→ $slug  ($url)"
   # virtual-time-budget lets intro animations and lazy images finish first.
   "$CHROME" --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 \
-    --window-size=1600,1000 --virtual-time-budget=9000 \
+    --window-size=1600,900 --virtual-time-budget=9000 \
     --screenshot="$TMP/$slug.png" "$url" >/dev/null 2>&1
   sips -s format jpeg -s formatOptions 82 "$TMP/$slug.png" --out "$OUT/$slug.jpg" >/dev/null
   echo "  saved $(du -h "$OUT/$slug.jpg" | cut -f1)  public/assets/work/$slug.jpg"
