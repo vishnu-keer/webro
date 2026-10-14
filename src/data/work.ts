@@ -55,6 +55,75 @@ export const caseStudies: readonly CaseStudy[] = [
     url: 'https://koalacaff.com/',
     year: 2026,
   },
+  {
+    slug: 'classy-salon',
+    client: 'Classy Unisex Salon',
+    industry: 'Beauty & Salon',
+    summary:
+      'A multi-page site for an established unisex salon in Jagatpura, Jaipur — hair, skin and bridal makeup services, a gallery, Google reviews and a WhatsApp booking form.',
+    // No `result` yet — add one when the client shares real numbers.
+    image: '/assets/work/classy-salon.jpg',
+    highlights: [
+      'Service pages for hair, skin and makeup — 15 treatments, each explained',
+      'Booking form that opens WhatsApp with service, date and time filled in',
+      'Google rating and reviews on the site, linked to the Business Profile',
+      'Gallery, Instagram and Google Maps directions built in',
+    ],
+    services: ['Website Development', 'UI/UX Design', 'SEO & Local Search'],
+    url: 'https://www.theclassysalon.com/',
+    year: 2026,
+  },
+  {
+    slug: 'namo-restro',
+    client: 'Namo Restro',
+    industry: 'Café & Restaurant',
+    summary:
+      'A restaurant site opposite SKIT College in Ramnagariya, Jaipur — a full digital menu, food gallery and a table reservation flow that sends bookings to WhatsApp.',
+    image: '/assets/work/namo-restro.jpg',
+    highlights: [
+      'Digital menu of 143 dishes across 27 categories, with prices',
+      'Table reservation form with guests, date, time and occasion, confirmed on WhatsApp',
+      'Food and moments gallery',
+      'Click-to-call, Google Maps directions and 24-hour opening hours',
+    ],
+    services: ['Website Development', 'UI/UX Design', 'SEO & Local Search'],
+    url: 'https://namorestroskit.com/',
+    year: 2026,
+  },
+  {
+    slug: 'maple-and-thyme',
+    client: 'Maple & Thyme',
+    industry: 'Café & Restaurant',
+    summary:
+      'A multi-page site for a contemporary pure-vegetarian restaurant on SKIT College Road, Jaipur — menu, lookbook gallery, video moments, reservations and Zomato ordering.',
+    image: '/assets/work/maple-and-thyme.jpg',
+    highlights: [
+      'Food and beverage menus, from tandoor and kebabs to wood-fired pizza',
+      'Dedicated reservation page plus WhatsApp and click-to-call',
+      'Lookbook gallery and short video moments from inside the restaurant',
+      'Direct link to order on Zomato',
+    ],
+    services: ['Website Development', 'UI/UX Design', 'SEO & Local Search'],
+    url: 'https://www.mapleandthyme.in/',
+    year: 2026,
+  },
+  {
+    slug: 'ttattatao',
+    client: 'Ttattatao',
+    industry: 'Cloud Kitchen',
+    summary:
+      'An ordering site for a pure-veg Chinese cloud kitchen on SKIT College Road, Jaipur — a 26-dish menu, a build-your-order cart that sends to WhatsApp, and Swiggy, Zomato and Toing links.',
+    image: '/assets/work/ttattatao.jpg',
+    highlights: [
+      'Menu of 26 dishes across dumplings, small plates, noodles, rice and Thai curries',
+      'Build-your-order cart with quantities and a running subtotal, sent on WhatsApp',
+      'Delivery form with one-tap Google Maps location pin',
+      'Order buttons for Swiggy, Zomato and Toing, plus suggested food pairings',
+    ],
+    services: ['Website Development', 'UI/UX Design', 'SEO & Local Search'],
+    url: 'https://www.ttattatao.com/',
+    year: 2026,
+  },
 ];
 
 /** Drives whether the Work page and its nav link are generated at all. */
