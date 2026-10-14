@@ -14,6 +14,8 @@ import type { CaseStudy } from '@/types';
  * TO ADD A SCREENSHOT
  *   Save it to  public/assets/work/<slug>.jpg  (1600×900, a 16:9 desktop screenshot), then set `image`.
  *   Without one, the card renders a branded panel instead of a broken image.
+ *   When REPLACING a screenshot, save it under a new name (e.g. -v3) — browsers
+ *   cache images by filename, so reusing a name keeps showing the old picture.
  */
 export const caseStudies: readonly CaseStudy[] = [
   {
@@ -62,7 +64,7 @@ export const caseStudies: readonly CaseStudy[] = [
     summary:
       'A multi-page site for an established unisex salon in Jagatpura, Jaipur — hair, skin and bridal makeup services, a gallery, Google reviews and a WhatsApp booking form.',
     // No `result` yet — add one when the client shares real numbers.
-    image: '/assets/work/classy-salon.jpg',
+    image: '/assets/work/classy-salon-v2.jpg',
     highlights: [
       'Service pages for hair, skin and makeup — 15 treatments, each explained',
       'Booking form that opens WhatsApp with service, date and time filled in',
@@ -79,7 +81,7 @@ export const caseStudies: readonly CaseStudy[] = [
     industry: 'Café & Restaurant',
     summary:
       'A restaurant site opposite SKIT College in Ramnagariya, Jaipur — a full digital menu, food gallery and a table reservation flow that sends bookings to WhatsApp.',
-    image: '/assets/work/namo-restro.jpg',
+    image: '/assets/work/namo-restro-v2.jpg',
     highlights: [
       'Digital menu of 143 dishes across 27 categories, with prices',
       'Table reservation form with guests, date, time and occasion, confirmed on WhatsApp',
@@ -96,7 +98,7 @@ export const caseStudies: readonly CaseStudy[] = [
     industry: 'Café & Restaurant',
     summary:
       'A multi-page site for a contemporary pure-vegetarian restaurant on SKIT College Road, Jaipur — menu, lookbook gallery, video moments, reservations and Zomato ordering.',
-    image: '/assets/work/maple-and-thyme.jpg',
+    image: '/assets/work/maple-and-thyme-v2.jpg',
     highlights: [
       'Food and beverage menus, from tandoor and kebabs to wood-fired pizza',
       'Dedicated reservation page plus WhatsApp and click-to-call',
@@ -113,7 +115,7 @@ export const caseStudies: readonly CaseStudy[] = [
     industry: 'Cloud Kitchen',
     summary:
       'An ordering site for a pure-veg Chinese cloud kitchen on SKIT College Road, Jaipur — a 26-dish menu, a build-your-order cart that sends to WhatsApp, and Swiggy, Zomato and Toing links.',
-    image: '/assets/work/ttattatao.jpg',
+    image: '/assets/work/ttattatao-v2.jpg',
     highlights: [
       'Menu of 26 dishes across dumplings, small plates, noodles, rice and Thai curries',
       'Build-your-order cart with quantities and a running subtotal, sent on WhatsApp',
