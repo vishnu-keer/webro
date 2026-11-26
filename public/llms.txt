@@ -39,7 +39,11 @@
 - Menu QR: $99 setup + $19/month
 - Review QR: $79 one-time
 
-## Client results
+## Client work (live sites, all in Jaipur)
 
-- Ishita Kapoor Salon & Makeup Studio, Jaipur (https://ishitakapoor.com/): bridal enquiries up 3×, around 70 enquiries in the first two months
-- Koala Caff, Jaipur (https://koalacaff.com/): around 50 table reservations booked through the site every month
+- Ishita Kapoor Salon & Makeup Studio (https://ishitakapoor.com/): bridal enquiries up 3×, around 70 enquiries in the first two months
+- Koala Caff (https://koalacaff.com/): around 50 table reservations booked through the site every month
+- Classy Unisex Salon (https://www.theclassysalon.com/): service pages, WhatsApp booking form, Google reviews
+- Namo Restro (https://namorestroskit.com/): digital menu, table reservations sent to WhatsApp
+- Maple & Thyme (https://www.mapleandthyme.in/): pure-vegetarian restaurant site with menus, reservations and Zomato ordering
+- Ttattatao (https://www.ttattatao.com/): Chinese cloud kitchen ordering site with a WhatsApp order cart

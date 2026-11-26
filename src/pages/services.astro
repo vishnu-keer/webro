@@ -3,14 +3,34 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import SectionHeader from '@components/ui/SectionHeader.astro';
 import ServiceCard from '@components/ui/ServiceCard.astro';
 import { services, processSteps } from '@/data/services';
+import { site } from '@/data/site';
+
+/** Each service card on this page as a schema.org Service, offered by WEBRO. */
+const servicesSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'WEBRO Studio services',
+  itemListElement: services.map((service, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    item: {
+      '@type': 'Service',
+      name: service.title,
+      description: service.summary,
+      provider: { '@id': `${site.url}/#organization` },
+      areaServed: site.markets.map((name) => ({ '@type': 'Country', name })),
+    },
+  })),
+};
 ---
 
 <BaseLayout
-  title="Services | Web, App, AI & QR Solutions — WEBRO"
-  description="Websites, mobile apps, e-commerce, custom software, AI chatbots and automation, Instagram handling, Menu QR and Review QR. One team, worldwide delivery."
+  title="Web, App & AI Development Services in Jaipur | WEBRO"
+  description="Website development, e-commerce, mobile apps, custom software, AI chatbots and automation, SEO, Menu QR and Review QR, from one Jaipur-based team."
   keywords="website development services, mobile app development company, ecommerce website development, custom software development, AI chatbot development, instagram management agency, menu qr code for restaurant, google review qr code, seo services"
   background="network"
 >
+  <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(servicesSchema)} />
   <div class="container">
     <div class="page-head">
       <SectionHeader

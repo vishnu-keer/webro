@@ -3,14 +3,57 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import SectionHeader from '@components/ui/SectionHeader.astro';
 import PlanCard from '@components/ui/PlanCard.astro';
 import { projectPlans, monthlyPlans } from '@/data/pricing';
+import { site } from '@/data/site';
+import type { Plan } from '@/types';
+
+/**
+ * The plans on this page as schema.org Offers. Prices are read from the same
+ * data the cards render, so the markup can never drift from what is shown.
+ * Wording that a single number cannot express ("starting at", "setup + $19/mo")
+ * is kept verbatim in `description`.
+ */
+const toOffer = (plan: Plan) => {
+  const amount = Number(plan.price.replace(/[^0-9.]/g, ''));
+  const monthly = plan.cadence === '/month';
+  const from = plan.cadence === 'starting at';
+  return {
+    '@type': 'Offer',
+    name: plan.name,
+    description: `${plan.summary} ${plan.price} ${plan.cadence}.`,
+    priceCurrency: 'USD',
+    ...(from
+      ? { priceSpecification: { '@type': 'PriceSpecification', minPrice: amount, priceCurrency: 'USD' } }
+      : monthly
+        ? {
+            price: amount,
+            priceSpecification: {
+              '@type': 'UnitPriceSpecification',
+              price: amount,
+              priceCurrency: 'USD',
+              unitCode: 'MON',
+            },
+          }
+        : { price: amount }),
+    seller: { '@id': `${site.url}/#organization` },
+  };
+};
+
+const pricingSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'OfferCatalog',
+  name: 'WEBRO Studio pricing',
+  url: new URL('/pricing', site.url).href,
+  itemListElement: [...projectPlans, ...monthlyPlans].map(toOffer),
+};
 ---
 
 <BaseLayout
-  title="Pricing in USD | Website, App & Monthly Plans — WEBRO"
+  title="Website Development Pricing from $499 | WEBRO Studio"
   description="Transparent fixed pricing from $499. Website, e-commerce and app packages plus monthly Instagram management, Menu QR and Review QR plans. No hourly billing."
   keywords="website design cost, web development pricing, how much does a website cost, app development cost, instagram management pricing, menu qr price, affordable web design agency"
   background="columns"
 >
+  <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(pricingSchema)} />
   <div class="container">
     <div class="page-head">
       <SectionHeader

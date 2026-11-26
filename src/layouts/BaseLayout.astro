@@ -2,6 +2,7 @@
 import { ViewTransitions } from 'astro:transitions';
 import type { SeoProps } from '@/types';
 import { site, navLinks } from '@/data/site';
+import { cleanPath as normalisePath, isIndexable } from '@/data/seo';
 import { services } from '@/data/services';
 import Header from '@components/layout/Header.astro';
 import Footer from '@components/layout/Footer.astro';
@@ -18,6 +19,12 @@ import ChatWidget from '@components/chat/ChatWidget.astro';
  */
 import '@fontsource-variable/space-grotesk';
 import '@fontsource-variable/dm-sans';
+// The same Latin files the CSS above uses (Vite gives both the same hashed
+// URL), preloaded so they arrive before first paint. Without this the page
+// paints in a fallback font, then re-flows when the web fonts swap in — the
+// main cause of layout shift (CLS) measured on the homepage.
+import spaceGroteskLatin from '@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2?url';
+import dmSansLatin from '@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2?url';
 
 import '@styles/main.scss';
 
@@ -30,23 +37,41 @@ const { title, description, keywords, indexable = true, background, floatingActi
  * links, sitemap and GitHub Pages all serve /services. The canonical must match
  * those, or Google gets two URLs for every page and splits ranking between them.
  */
-const cleanPath = Astro.url.pathname.replace(/(index)?\.html$/, '').replace(/(.)\/$/, '$1');
+const cleanPath = normalisePath(Astro.url.pathname);
 const canonical = new URL(cleanPath, site.url).href;
 const ogImage = new URL('/assets/og-image.png', site.url).href;
-const robots = indexable ? 'index, follow, max-image-preview:large' : 'noindex, follow';
-
-/** Same English content everywhere; hreflang signals market coverage. */
-const locales = ['en', 'en-in', 'en-us', 'en-gb', 'en-ae'];
+// A page is indexable only if it says so AND is not on the NOINDEX_PATHS list,
+// so the robots tag and sitemap.xml can never disagree.
+const indexed = indexable && isIndexable(cleanPath);
+const robots = indexed
+  ? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+  : 'noindex, follow';
+const ogImageAlt = `${site.name} — ${site.tagline}`;
 
 /**
- * Typed as both so Google reads it as a local entity as well as an agency.
- * ProfessionalService already inherits from LocalBusiness, but stating both
- * explicitly is what feeds the Jaipur map pack — which matters more for a
- * local-first agency than anything else in this file.
+ * The 404 page is served for every unknown URL, so it must not claim a
+ * canonical address of its own (it would point at a URL that does not exist).
+ */
+const isErrorPage = cleanPath === '/404';
+
+/**
+ * LocalBusiness: WEBRO has a real Google Business Profile in Jaipur.
+ * (schema.org marks the generic ProfessionalService type as deprecated, so it
+ * is not used.)
+ *
+ * Only details a visitor can also see on the site are published here:
+ *   - address: city, region and country, as shown on /contact and the footer.
+ *     The street address and coordinates stay out until they are shown on the
+ *     page and approved by the owner.
+ *   - hasMap: the same "Open in Google Maps" link /contact shows.
+ *   - currenciesAccepted: quotes and invoices are in USD (FAQ, terms), and
+ *     UPI payments, which the FAQ lists, settle in INR. Package prices on
+ *     /pricing stay USD-only.
+ * No priceRange: individual package prices live in the Offer data on /pricing.
  */
 const organisationSchema = {
   '@context': 'https://schema.org',
-  '@type': ['ProfessionalService', 'LocalBusiness'],
+  '@type': 'LocalBusiness',
   '@id': `${site.url}/#organization`,
   name: site.name,
   alternateName: site.shortName,
@@ -56,22 +81,21 @@ const organisationSchema = {
   image: ogImage,
   telephone: site.phone,
   email: site.email,
-  priceRange: '$$',
   currenciesAccepted: 'USD, INR',
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'sales',
+    telephone: site.phone,
+    email: site.email,
+    url: new URL('/contact', site.url).href,
+  },
   address: {
     '@type': 'PostalAddress',
-    streetAddress: site.location.streetAddress,
-    postalCode: site.location.postalCode,
     addressLocality: site.location.locality,
     addressRegion: site.location.region,
     addressCountry: site.location.country,
   },
-  geo: {
-    '@type': 'GeoCoordinates',
-    latitude: site.location.latitude,
-    longitude: site.location.longitude,
-  },
-  hasMap: site.location.mapsUrl,
+  hasMap: site.location.mapsSearchUrl,
   areaServed: site.markets.map((name) => ({ '@type': 'Country', name })),
   sameAs: [site.instagram],
   hasOfferCatalog: {
@@ -106,10 +130,10 @@ const pageLabels: Record<string, string> = {
   '/privacy': 'Privacy Policy',
   '/terms': 'Terms of Service',
 };
-const path = cleanPath || '/';
+const path = cleanPath;
 const pageLabel = pageLabels[path];
 const breadcrumbSchema =
-  indexable && path !== '/' && pageLabel
+  indexed && path !== '/' && pageLabel
     ? {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
@@ -131,25 +155,29 @@ const breadcrumbSchema =
     <title>{title}</title>
     <meta name="description" content={description} />
     {keywords && <meta name="keywords" content={keywords} />}
-    <link rel="canonical" href={canonical} />
+    {!isErrorPage && <link rel="canonical" href={canonical} />}
     <meta name="robots" content={robots} />
     <meta name="theme-color" content="#F1EBDD" />
 
-    {locales.map((locale) => <link rel="alternate" hreflang={locale} href={canonical} />)}
-    <link rel="alternate" hreflang="x-default" href={canonical} />
+    {/* One English version serves every market, so no hreflang alternates:
+        pointing several locales at the same URL tells search engines nothing. */}
 
     <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonical} />
-    <meta property="og:site_name" content={site.shortName} />
+    {!isErrorPage && <meta property="og:url" content={canonical} />}
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_IN" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
 
     {/* Google needs at least 48x48 and probes /favicon.ico at the root. */}
     <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -158,6 +186,9 @@ const breadcrumbSchema =
     <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
+
+    <link rel="preload" as="font" type="font/woff2" href={spaceGroteskLatin} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={dmSansLatin} crossorigin />
 
     {/* The logo is the largest element above the fold on every page. */}
     <link rel="preload" as="image" href="/assets/logo.png" />

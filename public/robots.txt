@@ -1,4 +1,39 @@
+# robots.txt for https://webro.studio
+#
+# Policy: search engines and user-requested AI fetchers may read the site.
+# Crawlers that collect content for AI model training may not.
+# Details and sources: docs/seo/ai-crawler-policy.md in the site repository.
+#
+# There are no private areas on this static site (no admin, login, API or
+# dashboard routes), so no path is disallowed for permitted crawlers. The
+# /review page is kept out of search with a noindex tag instead of a
+# Disallow, because a blocked page's noindex tag can never be read.
+
+# Search engines and AI search / user-request agents
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+Allow: /
+
+# AI model-training crawlers and control tokens
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: Google-Extended
+User-agent: Meta-ExternalAgent
+User-agent: Applebot-Extended
+Disallow: /
+
+# Common Crawl. Publishes an open web dataset that is widely used to train
+# AI models, so it is opted out separately.
+User-agent: CCBot
+Disallow: /
+
+# Everyone else
 User-agent: *
 Allow: /
 
-Sitemap: https://webro.studio/sitemap-index.xml
+Sitemap: https://webro.studio/sitemap.xml

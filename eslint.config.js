@@ -14,4 +14,10 @@ export default [
       'no-console': ['warn', { allow: ['warn', 'error'] }],
     },
   },
+  {
+    // Build-time Node scripts (e.g. scripts/check-seo.mjs) print reports.
+    files: ['scripts/**/*.mjs'],
+    languageOptions: { globals: { console: 'readonly', process: 'readonly', URL: 'readonly' } },
+    rules: { 'no-console': 'off' },
+  },
 ];

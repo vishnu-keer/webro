@@ -36,6 +36,9 @@ jobs:
       - name: Type check and build
         run: npm run build
 
+      - name: SEO check (sitemap, robots, canonicals, metadata)
+        run: npm run check:seo
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
