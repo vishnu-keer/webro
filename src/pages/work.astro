@@ -26,7 +26,7 @@ const workSchema = {
       name: study.client,
       description: study.summary,
       url: study.url,
-      dateCreated: String(study.year),
+      ...(hasImage(study.image) ? { image: new URL(study.image, site.url).href } : {}),
       creator: { '@id': `${site.url}/#organization` },
     },
   })),
@@ -34,8 +34,8 @@ const workSchema = {
 ---
 
 <BaseLayout
-  title="Our Work | Client Projects & Results — WEBRO"
-  description="Real websites delivered by WEBRO Studio for businesses in Jaipur and beyond — salons, cafés and local brands, each built to bring in bookings."
+  title="Our Work: Restaurant & Salon Websites in Jaipur | WEBRO"
+  description="Six live websites WEBRO Studio built in Jaipur: two salons, three restaurants and cafés, and a cloud kitchen, with menus, bookings and WhatsApp ordering."
   keywords="web design portfolio jaipur, website case studies, salon website design, cafe website design, agency work india"
   background="network"
 >

@@ -4,7 +4,11 @@ import SectionHeader from '@components/ui/SectionHeader.astro';
 import Accordion from '@components/ui/Accordion.astro';
 import { faqs } from '@/data/faqs';
 
-/** FAQPage markup makes these eligible for rich results. */
+/**
+ * FAQPage markup mirrors the questions shown on this page. Google now shows
+ * FAQ rich results only for a few government and health sites, so the value
+ * here is machine-readable answers (search and AI assistants), not a snippet.
+ */
 const faqSchema = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
@@ -17,8 +21,8 @@ const faqSchema = {
 ---
 
 <BaseLayout
-  title="FAQ | Costs, Timelines & Ownership — WEBRO"
-  description="How much a website costs, how long it takes, how payments work, what Menu QR and Review QR do, and what happens after launch."
+  title="Website Cost, Timeline & Ownership FAQ | WEBRO"
+  description="Answers on website costs from $499, timelines, payments, refunds, code ownership, Menu QR, Review QR, Instagram handling and support after launch."
   keywords="website cost faq, web design questions, how long to build a website, do i own my website code, website payment terms"
 >
   <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(faqSchema)} />
